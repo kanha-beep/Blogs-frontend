@@ -1,0 +1,26 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function AllBlogsCards({ blog }) {
+  const navigate = useNavigate();
+  return (
+    <div>
+      <img
+        src={`http://localhost:3000/uploads/${blog.image}`}
+        alt={blog.title}
+        style={{ height: "15vh", width: "20vw" }}
+      />
+      <p>{blog.author}</p>
+      <h3>{blog.title}</h3>
+      <p>{blog.content}</p>
+      <p>Date: {blog?.createdAt}</p>
+      <p>{blog?.category || "category"}</p>
+      <button
+        className="btn btn-primary"
+        onClick={() => navigate(`/${blog._id}/comments`)}
+      >
+        Read More
+      </button>
+    </div>
+  );
+}
