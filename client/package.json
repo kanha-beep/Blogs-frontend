@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "blog": "file:.."
+    "blog": "file:..",
+    "bootstrap": "^5.3.8"
   }
 }

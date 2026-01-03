@@ -39,6 +39,7 @@ export const BlogsComments = () => {
   // ✅ delete comment
   const handleDelete = async (commentId) => {
     try {
+      console.log("comment id: ", commentId)
       await api.delete(`/blogs/${id}/comments/${commentId}`);
       fetchComments();
     } catch (e) {
