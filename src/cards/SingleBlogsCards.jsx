@@ -26,13 +26,15 @@ export const SingleBlogsCards = ({ blogs, user }) => {
   // console.log("need this", user);
   console.log(user, "===", currentUser?._id);
   return (
-    <div className="card shadow-lg border-0">
-      <img
-        src={blogs.url}
-        className="card-img-top img-fluid"
-        alt={blogs?.title}
-        style={{ maxHeight: "450px", objectFit: "cover" }}
-      />
+    <div className="card border-0 hover:shadow-lg bg-white-200/50">
+      <div className="flex justify-center">
+        <img
+          src={blogs.url}
+          className="img-fluid h-[30rem] w-[30rem]"
+          alt={blogs?.title}
+          style={{ objectFit: "cover" }}
+        />
+      </div>
       <div className="card-body p-4 p-md-5">
         <div className="mb-4">
           <h1 className="fw-bold mb-3">{blogs?.title}</h1>
@@ -71,7 +73,7 @@ export const SingleBlogsCards = ({ blogs, user }) => {
 
         <hr className="my-4" />
 
-        <div className="d-flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           {currentUser?._id === user && (
             <>
               <EditButton id={blogs._id} />

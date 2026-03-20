@@ -16,8 +16,8 @@ export default function DeleteButton() {
   };
   return (
     <div>
-      <button className="btn btn-primary my-1" onClick={deleteBlogs}>
-        Delete
+      <button className="btn btn-danger my-1" onClick={deleteBlogs}>
+        <i className="bi bi-trash"></i>
       </button>
     </div>
   );

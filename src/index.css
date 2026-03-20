@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 * {
   margin: 0;
   padding: 0;
@@ -33,7 +36,9 @@ body {
 .navbar {
   backdrop-filter: blur(10px);
 }
-
+.bi {
+  font-family: "bootstrap-icons" !important;
+}
 .form-control:focus,
 .form-select:focus {
   border-color: #0d6efd;
@@ -59,6 +64,6 @@ body {
   transition: transform 0.3s ease;
 }
 
-.card:hover .card-img-top {
-  transform: scale(1.05);
-}
+/* .card:hover {
+  transform: scale(1.001);
+} */
