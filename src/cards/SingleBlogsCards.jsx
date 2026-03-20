@@ -27,18 +27,21 @@ export const SingleBlogsCards = ({ blogs, user }) => {
   console.log(user, "===", currentUser?._id);
   return (
     <div className="card border-0 hover:shadow-lg bg-white-200/50">
+      <div>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
+          {blogs?.title}
+        </h1>
+      </div>
       <div className="flex justify-center">
         <img
           src={blogs.url}
-          className="img-fluid h-[30rem] w-[30rem]"
+          className="img-fluid h-[30rem] w-[30rem] rounded-lg"
           alt={blogs?.title}
           style={{ objectFit: "cover" }}
         />
       </div>
       <div className="card-body p-4 p-md-5">
         <div className="mb-4">
-          <h1 className="fw-bold mb-3">{blogs?.title}</h1>
-
           <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
             <div className="d-flex align-items-center">
               <div
