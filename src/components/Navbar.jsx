@@ -1,83 +1,108 @@
 // ✅ Navbar.jsx (Corrected)
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useState } from "react";
 
 export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
+  const navigate = useNavigate();
   console.log("navbar: ", isLoggedIn);
-
+  const [open, setOpen] = useState(false);
+  const handleNav = (path) => {
+    setOpen(false);
+    navigate(path);
+  };
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow">
-      <div className="container-fluid">
-        <Link className="navbar-brand fw-bold fs-4 text-info" to="/">
-          Blog Posts
-        </Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav" // ✅ required for accessibility + toggle recognition
-          aria-expanded="false" // ✅ ensures state tracking of collapse
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+    <>
+      <nav className="bg-gray-900 text-white shadow">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+          <Link to="/" className="text-xl font-bold text-cyan-400">
+            Blog Posts
+          </Link>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
+          <button className="lg:hidden text-2xl" onClick={() => setOpen(!open)}>
+            {open ? "✕" : "☰"}
+          </button>
+
+          <ul className="hidden lg:flex gap-6 items-center">
             {isLoggedIn ? (
               <>
-                <li className="nav-item mx-2">
-                  <Link className="nav-link" to="/dashboard">
-                    Dashboard
-                  </Link>
-                </li>
-                <li className="nav-item mx-2">
-                  <Link className="nav-link" to="/profile">
-                    Profile
-                  </Link>
-                </li>
-                <li className="nav-item mx-2">
-                  <Link className="nav-link" to="/blogsform">
-                    Create Blogs
-                  </Link>
-                </li>
-                <li className="nav-item mx-2">
-                  <Link className="nav-link" to="/contacts">
-                    Contacts
-                  </Link>
-                </li>
-                <li className="nav-item mx-2">
-                  <button
-                    className="btn btn-outline-light btn-sm"
-                    onClick={() => {
-                      localStorage.removeItem("token");
-                      setIsLoggedIn(false);
-                      window.location.href = "/auth";
-                    }}
-                  >
-                    Logout
-                  </button>
-                </li>
+                <Link to="/dashboard" onClick={() => handleNav("/dashboard")}>
+                  Dashboard
+                </Link>
+                <Link to="/profile" onClick={() => handleNav("/profile")}>
+                  Profile
+                </Link>
+                <Link to="/blogsform" onClick={() => handleNav("/blogsform")}>
+                  Create
+                </Link>
+                <Link to="/contacts" onClick={() => handleNav("/contacts")}>
+                  Contacts
+                </Link>
+                <button
+                  onClick={() => {
+                    localStorage.clear();
+                    setIsLoggedIn(false);
+                    navigate("/auth");
+                  }}
+                  className="bg-gray-700 px-3 py-1 rounded"
+                >
+                  Logout
+                </button>
               </>
             ) : (
               <>
-                <li className="nav-item mx-2">
-                  <Link className="nav-link" to="/auth">
-                    Register
-                  </Link>
-                </li>
-                <li className="nav-item mx-2">
-                  <Link className="nav-link" to="/auth">
-                    Login
-                  </Link>
-                </li>
+                <Link to="/auth" onClick={() => handleNav("/auth")}>
+                  Register
+                </Link>
+                <Link to="/auth" onClick={() => handleNav("/auth")}>
+                  Login
+                </Link>
               </>
             )}
           </ul>
         </div>
-      </div>
-    </nav>
+
+        {open && (
+          <ul className="lg:hidden flex flex-col gap-3 px-4 pb-4">
+            {isLoggedIn ? (
+              <>
+                <Link to="/dashboard" onClick={() => handleNav("/dashboard")}>
+                  Dashboard
+                </Link>
+                <Link to="/profile" onClick={() => handleNav("/profile")}>
+                  Profile
+                </Link>
+                <Link to="/blogsform" onClick={() => handleNav("/blogsform")}>
+                  Create
+                </Link>
+                <Link to="/contacts" onClick={() => handleNav("/contacts")}>
+                  Contacts
+                </Link>
+                <button
+                  onClick={() => {
+                    localStorage.clear();
+                    setIsLoggedIn(false);
+                    navigate("/auth");
+                  }}
+                  className="bg-gray-700 px-3 py-1 rounded"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/auth" onClick={() => handleNav("/auth")}>
+                  Register
+                </Link>
+                <Link to="/auth" onClick={() => handleNav("/auth")}>
+                  Login
+                </Link>
+              </>
+            )}
+          </ul>
+        )}
+      </nav>
+    </>
   );
 }

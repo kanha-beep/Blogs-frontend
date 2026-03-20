@@ -5,6 +5,7 @@ export const EditBlogs = () => {
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
+  // const [catgoryArray, setCategoryArray] = useState("")
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -12,25 +13,25 @@ export const EditBlogs = () => {
     image: null,
     category: [],
   });
-  console.log("id", id);
   console.log("formData", formData);
   //single blog
   useEffect(() => {
     const getSingleBlog = async () => {
       try {
+        console.log("1. start");
         const res = await api.get(`/blogs/${id}/edit`);
         console.log("single blog: ", res?.data);
-        setFormData(res?.data);
+        setFormData({ ...res?.data, category: res?.data.category[0] || [] });
       } catch (e) {
         console.log(
           "error fetching single blog to edit: ",
-          e?.response?.data?.message
+          e?.response?.data?.message,
         );
         setMsg(e?.response?.data?.message);
       }
     };
     getSingleBlog();
-  }, []);
+  }, [id]);
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
@@ -135,6 +136,7 @@ export const EditBlogs = () => {
                           Category
                         </label>
                         <select
+                        
                           name="category"
                           value={formData.category}
                           onChange={handleCategory}

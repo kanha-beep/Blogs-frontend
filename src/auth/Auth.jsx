@@ -21,10 +21,14 @@ export default function Auth({ setIsLoggedIn }) {
         console.log("login user", user);
         const res = await api.post("/auth/login", user);
         console.log("user logged in: ", res.data);
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
+        if (res.data.user) {
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+        }
         setIsLoggedIn(true);
-        navigate("/")
+        navigate("/");
       } catch (e) {
         console.log("error login: ", e?.response?.data?.message);
         setIsLogin(false);
@@ -36,6 +40,12 @@ export default function Auth({ setIsLoggedIn }) {
         console.log("register user", user);
         const res = await api.post("/auth/register", user);
         console.log("user registered in: ", res.data);
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
+        if (res.data.user) {
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+        }
         setIsLogin(true);
         setIsLoggedIn(true);
       } catch (e) {

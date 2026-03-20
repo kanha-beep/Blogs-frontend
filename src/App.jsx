@@ -13,22 +13,26 @@ import { EditBlogs } from "./pages/EditBlogs.jsx";
 import { BlogsComments } from "./pages/BlogsComments.jsx";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const token = localStorage.getItem("token");
   useEffect(() => {
+    const token = localStorage.getItem("token") || localStorage.getItem("user");
     if (token) {
       setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
     }
-  }, [isLoggedIn, token]);
+  }, []);
+
   useEffect(() => {
     console.log("app: ", isLoggedIn);
-  }, []);
+  }, [isLoggedIn]);
   return (
     <>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<AllBlogsFinal />} />
-        <Route path="/:id/comments" element={<SingleBlogsFinal />} />
+        <Route path="/:id" element={<SingleBlogsFinal />} />
         <Route path="/:id/edit" element={<EditBlogs />} />
+        <Route path="/:id/comments" element={<SingleBlogsFinal />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/contacts" element={<Contacts />} />
