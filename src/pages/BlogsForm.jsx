@@ -27,11 +27,7 @@ export const BlogsForm = () => {
     imageFormData.append("category", formData.category);
     console.log(formData);
     try {
-      const res = await api.post("/blogs/new", imageFormData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const res = await api.post("/blogs/new", imageFormData );
       console.log("image uploaded: ", res?.data);
       window.location.href = "/";
     } catch (e) {
@@ -48,13 +44,15 @@ export const BlogsForm = () => {
     }
   };
   return (
-    <div className="min-vh-100 py-5" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="min-vh-100 py-5" style={{ backgroundColor: "#f8f9fa" }}>
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-8">
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4 p-md-5">
-                <h3 className="text-center mb-4 fw-bold">Create New Blog Post</h3>
+                <h3 className="text-center mb-4 fw-bold">
+                  Create New Blog Post
+                </h3>
 
                 <form onSubmit={handleSubmit}>
                   <div className="row mb-3">
@@ -67,7 +65,6 @@ export const BlogsForm = () => {
                         value={formData.title}
                         onChange={handleChange}
                         className="form-control"
-                        required
                       />
                     </div>
                     <div className="col-12 col-md-6">
@@ -79,7 +76,6 @@ export const BlogsForm = () => {
                         value={formData.author}
                         onChange={handleChange}
                         className="form-control"
-                        required
                       />
                     </div>
                   </div>
@@ -93,7 +89,6 @@ export const BlogsForm = () => {
                       onChange={handleChange}
                       className="form-control"
                       rows="6"
-                      required
                     />
                   </div>
 
@@ -115,7 +110,9 @@ export const BlogsForm = () => {
                     {formData.category?.length > 0 && (
                       <div className="mt-2">
                         {formData.category.map((cat) => (
-                          <span key={cat} className="badge bg-primary me-2">{cat}</span>
+                          <span key={cat} className="badge bg-primary me-2">
+                            {cat}
+                          </span>
                         ))}
                       </div>
                     )}
@@ -129,12 +126,14 @@ export const BlogsForm = () => {
                       accept="image/*"
                       onChange={handleChange}
                       className="form-control"
-                      required
                     />
                   </div>
 
                   <div className="text-center">
-                    <button type="submit" className="btn btn-primary px-5 fw-semibold">
+                    <button
+                      type="submit"
+                      className="btn btn-primary px-5 fw-semibold"
+                    >
                       Publish Blog
                     </button>
                   </div>

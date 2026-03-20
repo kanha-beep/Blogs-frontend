@@ -8,12 +8,12 @@ export default function AllBlogsCards({ blog }) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
-
+  console.log("all blog: ", blog.image)
   return (
     <div className="card h-100 border-0 shadow-sm" style={{ transition: 'transform 0.3s ease, box-shadow 0.3s ease' }}>
       <div className="position-relative overflow-hidden" style={{ height: '200px' }}>
         <img
-          src={`http://localhost:3000/uploads/${blog.image}`}
+          src={blog.url}
           alt={blog.title}
           className="card-img-top w-100 h-100"
           style={{ objectFit: 'cover' }}

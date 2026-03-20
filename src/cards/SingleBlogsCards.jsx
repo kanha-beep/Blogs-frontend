@@ -28,7 +28,7 @@ export const SingleBlogsCards = ({ blogs, user }) => {
   return (
     <div className="card shadow-lg border-0">
       <img
-        src={`http://localhost:3000/uploads/${blogs?.image}`}
+        src={blogs.url}
         className="card-img-top img-fluid"
         alt={blogs?.title}
         style={{ maxHeight: "450px", objectFit: "cover" }}

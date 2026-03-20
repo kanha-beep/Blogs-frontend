@@ -4,6 +4,7 @@ import RecentBlogs from "./RecentBlogs.jsx";
 import AllBlogs from "./AllBlogs.jsx";
 import api from "../utils/api.js";
 export default function AllBlogsFinal() {
+  const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState({ name: "", id: "" });
   const [totalPage, setTotalPage] = useState(0);
   const [page, setPage] = useState(1);
@@ -37,13 +38,18 @@ export default function AllBlogsFinal() {
   useEffect(() => {
     const getAllBlogs = async () => {
       try {
+        setLoading(true);
         const res = await api.get(`/blogs/all?sort=${sort}&page=${page}`);
         console.log("all blogs final: ", res?.data);
+        setLoading(false);
         setBlogs(res?.data?.blogs);
         setTotalPage(Math.ceil(res?.data?.totalBlogs / 3));
         setPage(parseInt(res?.data?.page));
       } catch (error) {
         console.log("error: ", error?.response?.data?.message);
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
     getAllBlogs();
@@ -52,14 +58,24 @@ export default function AllBlogsFinal() {
     <div className="min-vh-100" style={{ backgroundColor: "#f8f9fa" }}>
       <div className="container-fluid py-4">
         {currentUser.name && (
-          <div className="alert alert-info border-0 shadow-sm mb-4" role="alert">
+          <div
+            className="alert alert-info border-0 shadow-sm mb-4"
+            role="alert"
+          >
             <div className="d-flex align-items-center">
-              <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style={{ width: "50px", height: "50px", fontSize: "1.5rem" }}>
+              <div
+                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                style={{ width: "50px", height: "50px", fontSize: "1.5rem" }}
+              >
                 {currentUser.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <h6 className="mb-0 fw-semibold">Welcome back, {currentUser.name}!</h6>
-                <small className="text-muted">Start exploring and sharing your stories</small>
+                <h6 className="mb-0 fw-semibold">
+                  Welcome back, {currentUser.name}!
+                </h6>
+                <small className="text-muted">
+                  Start exploring and sharing your stories
+                </small>
               </div>
             </div>
           </div>
@@ -92,7 +108,7 @@ export default function AllBlogsFinal() {
         </div>
 
         <RecentBlogs blogs={recentBlogs} />
-        <AllBlogs blogs={blogs} />
+        <AllBlogs blogs={blogs} loading={loading}/>
 
         <div className="d-flex justify-content-center align-items-center gap-3 my-5">
           <button
@@ -102,7 +118,9 @@ export default function AllBlogsFinal() {
           >
             <i className="bi bi-arrow-left"></i> Previous
           </button>
-          <span className="badge bg-dark px-4 py-2 fs-6">Page {page} of {totalPage}</span>
+          <span className="badge bg-dark px-4 py-2 fs-6">
+            Page {page} of {totalPage}
+          </span>
           <button
             className="btn btn-primary px-4 shadow-sm"
             onClick={() => setPage((prev) => Math.min(prev + 1, totalPage))}

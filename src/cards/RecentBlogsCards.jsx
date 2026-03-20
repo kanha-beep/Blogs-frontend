@@ -13,7 +13,7 @@ export default function RecentBlogsCards({ blog }) {
     <div className="card h-100 border-0 shadow-sm" style={{ transition: 'transform 0.3s ease, box-shadow 0.3s ease', cursor: 'pointer' }} onClick={() => navigate(`/${blog._id}/comments`)}>
       <div className="position-relative overflow-hidden" style={{ height: '180px' }}>
         <img
-          src={`http://localhost:3000/uploads/${blog.image}`}
+           src={blog.url}
           alt={blog.title}
           className="card-img-top w-100 h-100"
           style={{ objectFit: 'cover' }}
