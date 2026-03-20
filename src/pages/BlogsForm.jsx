@@ -12,7 +12,7 @@ export const BlogsForm = () => {
     const { name, value, files } = e.target;
     setFormData({
       ...formData,
-      [name]: files ? files[0] : value,
+      [name]: files && files.length > 0 ? files[0] : value,
     });
   };
   const handleSubmit = async (e) => {
