@@ -12,7 +12,7 @@ export default function Edit({ id }) {
         navigate(`/${id}/edit`);
       }}
       disabled={loading}
-      className="rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-4 py-3 text-sm font-medium text-[#364331] transition hover:bg-[#f4efcf]"
+      className="w-full rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-4 py-3 text-sm font-medium text-[#364331] transition hover:bg-[#f4efcf] sm:w-auto"
     >
       {loading ? "Edit story..." : "Edit story"}
     </button>

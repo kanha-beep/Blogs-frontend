@@ -31,7 +31,7 @@ export const SingleBlogs = () => {
       {blogs ? (
         <SingleBlogsCards blogs={blogs} user={user} />
       ) : (
-        <div className="dashboard-panel p-5">
+        <div className="dashboard-panel rounded-none border-x-0 p-4 sm:rounded-[32px] sm:border sm:p-5">
           <div className="animate-pulse space-y-4">
             <div className="h-4 w-32 rounded-full bg-[#edf0d9]" />
             <div className="h-12 w-3/4 rounded-full bg-[#edf0d9]" />

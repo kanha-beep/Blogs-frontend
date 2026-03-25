@@ -24,7 +24,7 @@ export default function DeleteButton() {
   return (
     <button
       disabled={loading}
-      className="rounded-2xl border border-[#f0d49e] bg-[#fff1cd] px-4 py-3 text-sm font-medium text-[#8b5a2b] transition hover:bg-[#fde8b7]"
+      className="w-full rounded-2xl border border-[#f0d49e] bg-[#fff1cd] px-4 py-3 text-sm font-medium text-[#8b5a2b] transition hover:bg-[#fde8b7] sm:w-auto"
       onClick={deleteBlogs}
     >
       {loading ? "Delete story..." : "Delete story"}

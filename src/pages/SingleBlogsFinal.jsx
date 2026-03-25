@@ -11,7 +11,7 @@ export default function SingleBlogsFinal() {
         <div className="absolute bottom-[-12%] left-[28%] h-80 w-80 rounded-full bg-[radial-gradient(circle,_rgba(45,212,191,0.12),_transparent_72%)] blur-3xl" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-7 sm:px-5 lg:px-7">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-4 px-0 py-4 sm:gap-6 sm:px-5 sm:py-7 lg:px-7">
         <SingleBlogs />
         <BlogsComments />
       </div>

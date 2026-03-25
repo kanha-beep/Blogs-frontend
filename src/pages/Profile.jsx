@@ -1,28 +1,38 @@
 import React, { useState, useEffect } from "react";
 import api from "../utils/api.js";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
   const { showToast } = useToast();
+  const hasSession = Boolean(localStorage.getItem("token") || localStorage.getItem("user"));
 
   useEffect(() => {
     const getCurrentUser = async () => {
+      if (!hasSession) {
+        navigate("/auth");
+        return;
+      }
+
       try {
         const res = await api.get("/auth/me");
         setUser(res?.data?.user);
       } catch (error) {
         console.log("error user: ", error?.response?.data?.message);
-        showToast({ title: "Profile failed", message: getErrorMessage(error) });
+        if (hasSession) {
+          showToast({ title: "Profile failed", message: getErrorMessage(error) });
+        }
       }
     };
     getCurrentUser();
-  }, []);
+  }, [hasSession, navigate, showToast]);
 
   return (
-    <div className="min-vh-100 py-5" style={{ backgroundColor: '#f8f9fa' }}>
-      <div className="container">
+    <div className="min-vh-100 px-3 py-4 sm:px-4" style={{ backgroundColor: '#f8f9fa' }}>
+      <div className="mx-auto w-full max-w-4xl">
         <div className="row justify-content-center">
           <div className="col-12 col-md-8 col-lg-6">
             <div className="card border-0 shadow-sm">

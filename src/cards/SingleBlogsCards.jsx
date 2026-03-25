@@ -88,8 +88,8 @@ export const SingleBlogsCards = ({ blogs, user }) => {
         : "bg-transparent";
 
   return (
-    <article className="dashboard-panel overflow-hidden">
-      <div className="p-4 sm:p-5 lg:p-5">
+    <article className="dashboard-panel overflow-hidden rounded-none border-x-0 sm:rounded-[32px] sm:border">
+      <div className="p-3 sm:p-5 lg:p-5">
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full border border-[#dbe6b8] bg-[#fff9df] px-3 py-1 text-xs uppercase tracking-[0.24em] text-[#465240]">
             Feature Story
@@ -101,27 +101,27 @@ export const SingleBlogsCards = ({ blogs, user }) => {
           )}
         </div>
 
-        <div className="mt-6 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+        <div className="mt-4 grid gap-5 sm:mt-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
           <div>
-            <h1 className="font-display text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl">
+            <h1 className="font-display text-3xl font-semibold leading-tight text-slate-900 sm:text-5xl">
               {blogs?.title}
             </h1>
 
-            <div className="mt-6 flex flex-wrap gap-4">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-4 py-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eef7cc] text-sm font-semibold text-[#547047]">
+            <div className="mt-4 grid gap-2 sm:mt-6 sm:flex sm:flex-wrap sm:gap-4">
+              <div className="flex items-center gap-2 rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-3 py-2 sm:gap-3 sm:px-4 sm:py-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#eef7cc] text-xs font-semibold text-[#547047] sm:h-11 sm:w-11 sm:text-sm">
                   {blogs?.author?.charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-900">By {blogs?.author}</p>
-                  <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+                  <p className="text-[11px] uppercase tracking-[0.14em] text-[#465240] sm:text-xs sm:tracking-[0.18em]">
                     Published {formatDate(blogs?.createdAt)}
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+              <div className="rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-3 py-2 sm:px-4 sm:py-3">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-[#465240] sm:text-xs sm:tracking-[0.18em]">
                   Reading Time
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-900">{readingTime} min read</p>
@@ -137,56 +137,56 @@ export const SingleBlogsCards = ({ blogs, user }) => {
               </div> */}
             </div>
 
-            <div className="mt-6 rounded-[28px] border border-[#dbe6b8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,232,0.96))] p-4">
+            <div className="mt-5 rounded-[24px] border border-[#dbe6b8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,232,0.96))] p-3 sm:mt-6 sm:rounded-[28px] sm:p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
                 Discussion snapshot
               </p>
 
-              <div className="mt-4 space-y-4">
-                <div className="grid gap-3 md:grid-cols-3">
-                  <div className="rounded-[22px] border border-[#dbe6b8] bg-[#fffdf4] p-3">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#465240]">
+              <div className="mt-3 space-y-3 sm:mt-4 sm:space-y-4">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  <div className="rounded-[18px] border border-[#dbe6b8] bg-[#fffdf4] p-2.5 text-center sm:rounded-[22px] sm:p-3 sm:text-left">
+                    <p className="text-[10px] uppercase tracking-[0.14em] text-[#465240] sm:text-[11px] sm:tracking-[0.18em]">
                       Conversation pulse
                     </p>
-                    <p className="mt-1 font-display text-2xl text-slate-900">
+                    <p className="mt-1 font-display text-xl text-slate-900 sm:text-2xl">
                       {comments.length}
                     </p>
                   </div>
 
-                  <div className="rounded-[22px] border border-[#dbe6b8] bg-[#fffdf4] p-3">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#465240]">
+                  <div className="rounded-[18px] border border-[#dbe6b8] bg-[#fffdf4] p-2.5 text-center sm:rounded-[22px] sm:p-3 sm:text-left">
+                    <p className="text-[10px] uppercase tracking-[0.14em] text-[#465240] sm:text-[11px] sm:tracking-[0.18em]">
                       Active voices
                     </p>
-                    <p className="mt-1 font-display text-2xl text-slate-900">
+                    <p className="mt-1 font-display text-xl text-slate-900 sm:text-2xl">
                       {uniqueVoices}
                     </p>
                   </div>
 
-                  <div className="rounded-[22px] border border-[#dbe6b8] bg-[#fffdf4] p-3">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#465240]">
+                  <div className="rounded-[18px] border border-[#dbe6b8] bg-[#fffdf4] p-2.5 text-center sm:rounded-[22px] sm:p-3 sm:text-left">
+                    <p className="text-[10px] uppercase tracking-[0.14em] text-[#465240] sm:text-[11px] sm:tracking-[0.18em]">
                       Average rating
                     </p>
-                    <p className="mt-1 font-display text-2xl text-slate-900">
+                    <p className="mt-1 font-display text-xl text-slate-900 sm:text-2xl">
                       {averageRating}
                     </p>
                   </div>
                 </div>
 
-                <div className="rounded-[22px] border border-[#dbe6b8] bg-[#f6f7e8] p-4">
+                <div className="rounded-[18px] border border-[#dbe6b8] bg-[#f6f7e8] p-3 sm:rounded-[22px] sm:p-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
                     Latest activity
                   </p>
                   {latestComment ? (
                     <>
-                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
                         <p className="text-sm font-semibold text-slate-900">
                           {latestComment?.user?.name || "Anonymous"}
                         </p>
-                        <span className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+                        <span className="text-[11px] uppercase tracking-[0.14em] text-[#465240] sm:text-xs sm:tracking-[0.18em]">
                           {formatCommentDate(latestComment?.createdAt)}
                         </span>
                       </div>
-                      <p className="mt-2 text-sm leading-6 text-[#42503d]">
+                      <p className="mt-2 text-sm leading-5 text-[#42503d] sm:leading-6">
                         {latestComment?.content?.length > 90
                           ? `${latestComment.content.slice(0, 90)}...`
                           : latestComment?.content}
@@ -210,7 +210,7 @@ export const SingleBlogsCards = ({ blogs, user }) => {
                 alt={blogs?.title}
               />
             </div>
-            <div className="mt-4 flex flex-wrap gap-3">
+            <div className="mt-4 grid gap-3 sm:flex sm:flex-wrap">
               {currentUser?._id === user && (
                 <>
                   <EditButton id={blogs._id} />
@@ -223,22 +223,22 @@ export const SingleBlogsCards = ({ blogs, user }) => {
         </div>
       </div>
 
-      <div className="border-t border-[#dbe6b8] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(245,247,232,0.92))] px-4 py-6 sm:px-5 lg:px-5">
+      <div className="bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(245,247,232,0.92))] px-3 pb-5 pt-2 sm:px-5 sm:pb-6 lg:px-5">
         <div className={`mx-auto ${storyWidthClass}`}>
-          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-3">
               <span className="h-px flex-1 bg-[#dbe6b8]" />
               <span className="text-xs uppercase tracking-[0.3em] text-[#465240]">Story</span>
               <span className="h-px flex-1 bg-[#dbe6b8]" />
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 sm:overflow-visible">
               {readerModes.map((mode) => (
                 <button
                   key={mode.id}
                   type="button"
                   onClick={() => setReaderMode(mode.id)}
-                  className={`rounded-full px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] transition ${
+                  className={`shrink-0 rounded-full px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] transition ${
                     readerMode === mode.id
                       ? "bg-[#eef7cc] text-[#304122]"
                       : "border border-[#dbe6b8] bg-[#fffdf4] text-[#465240] hover:bg-[#f4efcf]"
@@ -250,13 +250,13 @@ export const SingleBlogsCards = ({ blogs, user }) => {
             </div>
           </div>
 
-          <div className={`rounded-[28px] border border-[#dbe6b8] ${storyToneClass} p-4 sm:p-5`}>
+          <div className={`${storyToneClass} p-1 sm:p-2`}>
             <div className="space-y-6 text-[1.05rem] leading-8 text-[#2e3a29]">
               {groupedSections.map((block, index) => (
                 <div
                   key={`${blogs._id}-${index}`}
                   onClick={() => setActiveParagraph(index)}
-                  className={`block w-full cursor-pointer rounded-[22px] px-4 py-4 text-left transition ${
+                  className={`block w-full cursor-pointer rounded-[22px] px-3 py-4 text-left transition sm:px-4 ${
                     activeParagraph === index
                       ? "bg-[#eef7cc] shadow-[0_14px_32px_rgba(168,203,115,0.12)]"
                       : "hover:bg-[#fff9df]"

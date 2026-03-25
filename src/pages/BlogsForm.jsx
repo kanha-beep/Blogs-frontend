@@ -48,8 +48,8 @@ export const BlogsForm = () => {
     }
   };
   return (
-    <div className="min-vh-100 py-5" style={{ backgroundColor: "#f8f9fa" }}>
-      <div className="container">
+    <div className="min-vh-100 px-3 py-4 sm:px-4" style={{ backgroundColor: "#f8f9fa" }}>
+      <div className="mx-auto w-full max-w-5xl">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-8">
             <div className="card border-0 shadow-sm">

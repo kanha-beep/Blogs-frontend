@@ -17,6 +17,7 @@ const readingMinutes = (content = "") =>
 export default function Dashboard() {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const hasSession = Boolean(localStorage.getItem("token") || localStorage.getItem("user"));
   const [actionLoading, setActionLoading] = useState("");
   const [dashboard, setDashboard] = useState({
     loading: true,
@@ -31,6 +32,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     const loadDashboard = async () => {
+      if (!hasSession) {
+        navigate("/auth");
+        return;
+      }
+
       try {
         const [blogsRes, userRes] = await Promise.allSettled([
           api.get("/blogs/mine?limit=100"),
@@ -87,12 +93,14 @@ export default function Dashboard() {
       } catch (error) {
         console.log("dashboard error:", error?.response?.data?.message || error.message);
         setDashboard((prev) => ({ ...prev, loading: false }));
-        showToast({ title: "Dashboard failed", message: getErrorMessage(error) });
+        if (hasSession) {
+          showToast({ title: "Dashboard failed", message: getErrorMessage(error) });
+        }
       }
     };
 
     loadDashboard();
-  }, []);
+  }, [hasSession, navigate, showToast]);
 
   const stats = [
     {

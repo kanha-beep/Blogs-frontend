@@ -11,6 +11,7 @@ const formatCount = (value) => value.toString().padStart(2, "0");
 
 export default function AllBlogsFinal() {
   const navigate = useNavigate();
+  const hasSession = Boolean(localStorage.getItem("token") || localStorage.getItem("user"));
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState({ name: "", id: "" });
   const [totalPage, setTotalPage] = useState(0);
@@ -22,17 +23,21 @@ export default function AllBlogsFinal() {
   const { showToast } = useToast();
   useEffect(() => {
     const getCurrentUser = async () => {
+      if (!hasSession) return;
+
       try {
         const res = await api.get("/auth/me");
         setCurrentUser(res?.data?.user);
         // console.log("current user: ", res?.data?.user);
       } catch (error) {
         console.log("error user: ", error?.response?.data?.message);
-        showToast({ title: "Profile load failed", message: getErrorMessage(error) });
+        if (hasSession) {
+          showToast({ title: "Profile load failed", message: getErrorMessage(error) });
+        }
       }
     };
     getCurrentUser();
-  }, []);
+  }, [hasSession, showToast]);
   useEffect(() => {
     const getRecentBlogs = async () => {
       try {
