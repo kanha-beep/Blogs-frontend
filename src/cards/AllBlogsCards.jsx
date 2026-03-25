@@ -8,45 +8,46 @@ export default function AllBlogsCards({ blog }) {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
-  console.log("all blog: ", blog.image)
   return (
-    <div className="card h-100 border-0 shadow-sm" style={{ transition: 'transform 0.3s ease, box-shadow 0.3s ease' }}>
-      <div className="position-relative overflow-hidden" style={{ height: '200px' }}>
+    <article className="group flex h-full flex-col overflow-hidden rounded-[30px] border border-[#dbe6b8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,232,0.96))] transition duration-300 hover:-translate-y-1 hover:border-[#c8d79f]">
+      <div className="relative h-56 overflow-hidden">
         <img
           src={blog.url}
           alt={blog.title}
-          className="card-img-top w-100 h-100"
-          style={{ objectFit: 'cover' }}
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
         {blog?.category && (
-          <span className="position-absolute top-0 end-0 m-2 badge bg-primary">
-            {blog.category}
+          <span className="absolute right-4 top-4 rounded-full border border-[#cae1a8] bg-[#eef7cc] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#547047]">
+            {Array.isArray(blog.category) ? blog.category.join(" / ") : blog.category}
           </span>
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#fff8dc] via-transparent to-transparent" />
       </div>
-      <div className="card-body d-flex flex-column">
-        <div className="d-flex align-items-center mb-2">
-          <div className="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2" style={{ width: '32px', height: '32px', fontSize: '0.875rem', color: 'white' }}>
+      <div className="flex flex-1 flex-col p-5">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#eef7cc] text-sm font-semibold text-[#547047]">
             {blog.author?.charAt(0).toUpperCase()}
           </div>
           <div>
-            <small className="text-muted d-block" style={{ fontSize: '0.75rem' }}>{blog.author}</small>
-            <small className="text-muted" style={{ fontSize: '0.7rem' }}>{formatDate(blog?.createdAt)}</small>
+            <p className="text-sm text-slate-900">{blog.author}</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+              {formatDate(blog?.createdAt)}
+            </p>
           </div>
         </div>
-        <h5 className="card-title fw-semibold mb-2" style={{ fontSize: '1.1rem', lineHeight: '1.4' }}>
-          {blog.title.length > 60 ? blog.title.substring(0, 60) + '...' : blog.title}
-        </h5>
-        <p className="card-text text-muted flex-grow-1" style={{ fontSize: '0.9rem' }}>
-          {blog.content.length > 100 ? blog.content.substring(0, 100) + '...' : blog.content}
+        <h3 className="font-display text-2xl leading-tight text-slate-900">
+          {blog.title.length > 72 ? `${blog.title.substring(0, 72)}...` : blog.title}
+        </h3>
+        <p className="mt-3 flex-grow text-sm leading-6 text-[#42503d]">
+          {blog.content.length > 120 ? `${blog.content.substring(0, 120)}...` : blog.content}
         </p>
         <button
-          className="btn btn-primary w-100 mt-2"
+          className="mt-5 rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
           onClick={() => navigate(`/${blog._id}/comments`)}
         >
-          Read More
+          Read story
         </button>
       </div>
-    </div>
+    </article>
   );
 }

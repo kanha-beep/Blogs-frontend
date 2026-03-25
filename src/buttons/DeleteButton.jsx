@@ -4,21 +4,22 @@ import api from "../utils/api";
 export default function DeleteButton() {
   const navigate = useNavigate();
   const { id } = useParams();
-  // console.log("id for delete: ", id);
+
   const deleteBlogs = async () => {
     try {
-      const res = await api.delete(`/blogs/${id}/delete`);
-      console.log("delete blog: ", res?.data);
+      await api.delete(`/blogs/${id}/delete`);
       navigate("/");
     } catch (e) {
       alert(e?.response?.data?.message);
     }
   };
+
   return (
-    <div>
-      <button className="btn btn-danger my-1" onClick={deleteBlogs}>
-        <i className="bi bi-trash"></i>
-      </button>
-    </div>
+    <button
+      className="rounded-2xl border border-[#f0d49e] bg-[#fff1cd] px-4 py-3 text-sm font-medium text-[#8b5a2b] transition hover:bg-[#fde8b7]"
+      onClick={deleteBlogs}
+    >
+      Delete story
+    </button>
   );
 }

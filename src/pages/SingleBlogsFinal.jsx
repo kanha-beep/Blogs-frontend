@@ -1,16 +1,19 @@
 import React from "react";
 import { BlogsComments } from "./BlogsComments";
 import { SingleBlogs } from "./SingleBlogs";
-import { useState } from "react";
 
 export default function SingleBlogsFinal() {
-  const [ID, setID] = useState("");
-
   return (
-    <div className="container">
-      <div className="min-vh-100 py-8" style={{ backgroundColor: "#f8f9fa" }}>
-        <SingleBlogs ID={ID} setID={setID} />
-        <BlogsComments ID={ID} setID={setID} />
+    <div className="relative min-h-screen overflow-hidden bg-[var(--dashboard-bg)] text-slate-900">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-10%] top-[4%] h-72 w-72 rounded-full bg-[radial-gradient(circle,_rgba(125,211,252,0.22),_transparent_72%)] blur-2xl" />
+        <div className="absolute right-[-10%] top-[18%] h-96 w-96 rounded-full bg-[radial-gradient(circle,_rgba(251,146,60,0.16),_transparent_72%)] blur-3xl" />
+        <div className="absolute bottom-[-12%] left-[28%] h-80 w-80 rounded-full bg-[radial-gradient(circle,_rgba(45,212,191,0.12),_transparent_72%)] blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-7 sm:px-5 lg:px-7">
+        <SingleBlogs />
+        <BlogsComments />
       </div>
     </div>
   );

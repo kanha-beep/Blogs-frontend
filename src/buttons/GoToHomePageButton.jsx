@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
 export default function GoToHomePageButton() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   return (
-    <div>
-      <button onClick={() => navigate("/")} className="btn btn-primary">Go to Home Page</button>
-    </div>
+    <button
+      onClick={() => navigate("/")}
+      className="rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
+    >
+      Back to homepage
+    </button>
   );
 }

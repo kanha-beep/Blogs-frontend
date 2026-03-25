@@ -1,8 +1,36 @@
+import { useMemo, useState } from "react";
 import GoToHomePageButton from "../buttons/GoToHomePageButton";
 import EditButton from "../buttons/EditButton.jsx";
 import DeleteButton from "../buttons/DeleteButton.jsx";
 
 export const SingleBlogsCards = ({ blogs, user }) => {
+  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const [readerMode, setReaderMode] = useState("focus");
+  const [activeParagraph, setActiveParagraph] = useState(0);
+  const comments = blogs?.comments || [];
+  const paragraphs = useMemo(
+    () => blogs?.content?.split(/\n+/).filter(Boolean) || [],
+    [blogs?.content]
+  );
+  const readingTime = Math.max(
+    1,
+    Math.ceil((blogs?.content || "").trim().split(/\s+/).filter(Boolean).length / 180)
+  );
+  const uniqueVoices = new Set(
+    comments.map((comment) => comment?.user?.name || "Anonymous")
+  ).size;
+  const averageRating = comments.length
+    ? (
+        comments.reduce((sum, comment) => sum + (Number(comment?.rating) || 0), 0) /
+        comments.length
+      ).toFixed(1)
+    : 0;
+  const latestComment = comments.length
+    ? [...comments].sort(
+        (a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime()
+      )[0]
+    : null;
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -11,81 +39,243 @@ export const SingleBlogsCards = ({ blogs, user }) => {
       year: "numeric",
     });
   };
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null"); // ✅ shorter, safe version
-  // console.log("current user:", currentUser?._id);
-  // const storedUser = localStorage.getItem("user");
-  // let currentUser = null;
-  // if (storedUser && storedUser !== "undefined") {
-  //   try {
-  //     currentUser = JSON.parse(storedUser);
-  //   } catch (err) {
-  //     console.error("Error parsing user:", err);
-  //     currentUser = null;
-  //   }
-  // }
-  // console.log("need this", user);
-  console.log(user, "===", currentUser?._id);
+
+  const formatCommentDate = (value) => {
+    if (!value) return "Just now";
+
+    return new Date(value).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const groupedSections = useMemo(() => {
+    if (!paragraphs.length) return [];
+
+    const sectionCount = Math.min(3, paragraphs.length);
+    const chunkSize = Math.ceil(paragraphs.length / sectionCount);
+
+    return Array.from({ length: sectionCount }, (_, index) => {
+      const chunk = paragraphs.slice(index * chunkSize, (index + 1) * chunkSize);
+      const combined = chunk.join(" ").trim();
+      const parts = combined.split(/(?<=[.:!?])\s+/).filter(Boolean);
+
+      return {
+        heading: parts[0] || `Part ${index + 1}`,
+        summary: parts.slice(1).join(" ").trim(),
+      };
+    }).filter((section) => section.heading);
+  }, [paragraphs]);
+
+  const readerModes = [
+    { id: "focus", label: "Focus" },
+    { id: "wide", label: "Wide" },
+    { id: "immersive", label: "Immersive" },
+  ];
+
+  const storyWidthClass =
+    readerMode === "wide"
+      ? "max-w-4xl"
+      : readerMode === "immersive"
+        ? "max-w-5xl"
+        : "max-w-3xl";
+  const storyToneClass =
+    readerMode === "immersive"
+      ? "bg-[#fffef8]"
+      : readerMode === "wide"
+        ? "bg-[#fffdf7]"
+        : "bg-transparent";
+
   return (
-    <div className="card border-0 hover:shadow-lg bg-white-200/50">
-      <div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 text-transparent bg-clip-text">
-          {blogs?.title}
-        </h1>
-      </div>
-      <div className="flex justify-center">
-        <img
-          src={blogs.url}
-          className="img-fluid h-[30rem] w-[30rem] rounded-lg"
-          alt={blogs?.title}
-          style={{ objectFit: "cover" }}
-        />
-      </div>
-      <div className="card-body p-4 p-md-5">
-        <div className="mb-4">
-          <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
-            <div className="d-flex align-items-center">
-              <div
-                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
-                style={{ width: "40px", height: "40px" }}
-              >
-                {blogs?.author?.charAt(0).toUpperCase()}
+    <article className="dashboard-panel overflow-hidden">
+      <div className="p-4 sm:p-5 lg:p-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="rounded-full border border-[#dbe6b8] bg-[#fff9df] px-3 py-1 text-xs uppercase tracking-[0.24em] text-[#465240]">
+            Feature Story
+          </span>
+          {blogs?.category && (
+            <span className="rounded-full border border-[#cae1a8] bg-[#eef7cc] px-3 py-1 text-xs uppercase tracking-[0.22em] text-[#547047]">
+              {Array.isArray(blogs.category) ? blogs.category.join(" / ") : blogs.category}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-6 grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+          <div>
+            <h1 className="font-display text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl">
+              {blogs?.title}
+            </h1>
+
+            <div className="mt-6 flex flex-wrap gap-4">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-4 py-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#eef7cc] text-sm font-semibold text-[#547047]">
+                  {blogs?.author?.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-900">By {blogs?.author}</p>
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+                    Published {formatDate(blogs?.createdAt)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <div className="fw-semibold small">By {blogs?.author}</div>
-                <small className="text-muted">
-                  {formatDate(blogs?.createdAt)}
-                </small>
+
+              <div className="rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-4 py-3">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+                  Reading Time
+                </p>
+                <p className="mt-1 text-sm font-medium text-slate-900">{readingTime} min read</p>
               </div>
+{/* 
+              <div className="rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-4 py-3">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+                  Discussion
+                </p>
+                <p className="mt-1 text-sm font-medium text-slate-900">
+                  {blogs?.comments?.length || 0} comments
+                </p>
+              </div> */}
             </div>
 
-            {blogs?.category && (
-              <span className="badge bg-primary px-3 py-2">
-                {blogs?.category}
-              </span>
-            )}
+            <div className="mt-6 rounded-[28px] border border-[#dbe6b8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,232,0.96))] p-4">
+              <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+                Discussion snapshot
+              </p>
+
+              <div className="mt-4 space-y-4">
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="rounded-[22px] border border-[#dbe6b8] bg-[#fffdf4] p-3">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#465240]">
+                      Conversation pulse
+                    </p>
+                    <p className="mt-1 font-display text-2xl text-slate-900">
+                      {comments.length}
+                    </p>
+                  </div>
+
+                  <div className="rounded-[22px] border border-[#dbe6b8] bg-[#fffdf4] p-3">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#465240]">
+                      Active voices
+                    </p>
+                    <p className="mt-1 font-display text-2xl text-slate-900">
+                      {uniqueVoices}
+                    </p>
+                  </div>
+
+                  <div className="rounded-[22px] border border-[#dbe6b8] bg-[#fffdf4] p-3">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#465240]">
+                      Average rating
+                    </p>
+                    <p className="mt-1 font-display text-2xl text-slate-900">
+                      {averageRating}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-[22px] border border-[#dbe6b8] bg-[#f6f7e8] p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+                    Latest activity
+                  </p>
+                  {latestComment ? (
+                    <>
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-semibold text-slate-900">
+                          {latestComment?.user?.name || "Anonymous"}
+                        </p>
+                        <span className="text-xs uppercase tracking-[0.18em] text-[#465240]">
+                          {formatCommentDate(latestComment?.createdAt)}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-[#42503d]">
+                        {latestComment?.content?.length > 90
+                          ? `${latestComment.content.slice(0, 90)}...`
+                          : latestComment?.content}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="mt-2 text-sm text-[#465240]">
+                      No replies yet. The first strong comment sets the tone.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <hr className="my-4" />
-
-        <div className="blog-content">
-          <p className="fs-5 text-secondary" style={{ lineHeight: 1.8 }}>
-            {blogs?.content}
-          </p>
-        </div>
-
-        <hr className="my-4" />
-
-        <div className="flex flex-wrap gap-2 items-center">
-          {currentUser?._id === user && (
-            <>
-              <EditButton id={blogs._id} />
-              <DeleteButton />
-            </>
-          )}
-          <GoToHomePageButton />
+          <aside className="rounded-[30px] border border-[#dbe6b8] bg-[#fffdf4] p-4">
+            <div className="overflow-hidden rounded-[24px]">
+              <img
+                src={blogs.url}
+                className="h-[20rem] w-full object-cover sm:h-[24rem]"
+                alt={blogs?.title}
+              />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {currentUser?._id === user && (
+                <>
+                  <EditButton id={blogs._id} />
+                  <DeleteButton />
+                </>
+              )}
+              {/* <GoToHomePageButton /> */}
+            </div>
+          </aside>
         </div>
       </div>
-    </div>
+
+      <div className="border-t border-[#dbe6b8] bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(245,247,232,0.92))] px-4 py-6 sm:px-5 lg:px-5">
+        <div className={`mx-auto ${storyWidthClass}`}>
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="h-px flex-1 bg-[#dbe6b8]" />
+              <span className="text-xs uppercase tracking-[0.3em] text-[#465240]">Story</span>
+              <span className="h-px flex-1 bg-[#dbe6b8]" />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {readerModes.map((mode) => (
+                <button
+                  key={mode.id}
+                  type="button"
+                  onClick={() => setReaderMode(mode.id)}
+                  className={`rounded-full px-3 py-2 text-xs font-medium uppercase tracking-[0.18em] transition ${
+                    readerMode === mode.id
+                      ? "bg-[#eef7cc] text-[#304122]"
+                      : "border border-[#dbe6b8] bg-[#fffdf4] text-[#465240] hover:bg-[#f4efcf]"
+                  }`}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={`rounded-[28px] border border-[#dbe6b8] ${storyToneClass} p-4 sm:p-5`}>
+            <div className="space-y-6 text-[1.05rem] leading-8 text-[#2e3a29]">
+              {groupedSections.map((block, index) => (
+                <div
+                  key={`${blogs._id}-${index}`}
+                  onClick={() => setActiveParagraph(index)}
+                  className={`block w-full cursor-pointer rounded-[22px] px-4 py-4 text-left transition ${
+                    activeParagraph === index
+                      ? "bg-[#eef7cc] shadow-[0_14px_32px_rgba(168,203,115,0.12)]"
+                      : "hover:bg-[#fff9df]"
+                  }`}
+                >
+                  <p className="font-display text-xl font-semibold leading-tight text-slate-900 sm:text-[1.35rem]">
+                    {block.heading}
+                  </p>
+                  {block.summary ? (
+                    <p className="mt-3 border-l-2 border-[#dbe6b8] pl-5 text-[1rem] leading-8 text-[#42503d]">
+                      {block.summary}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
   );
 };

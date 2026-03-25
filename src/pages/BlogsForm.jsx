@@ -27,7 +27,7 @@ export const BlogsForm = () => {
     imageFormData.append("category", formData.category);
     console.log(formData);
     try {
-      const res = await api.post("/blogs/new", imageFormData );
+      const res = await api.post("/blogs/new", imageFormData);
       console.log("image uploaded: ", res?.data);
       window.location.href = "/";
     } catch (e) {

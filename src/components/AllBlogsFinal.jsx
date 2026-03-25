@@ -1,9 +1,14 @@
 import { useState } from "react";
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import RecentBlogs from "./RecentBlogs.jsx";
 import AllBlogs from "./AllBlogs.jsx";
 import api from "../utils/api.js";
+
+const formatCount = (value) => value.toString().padStart(2, "0");
+
 export default function AllBlogsFinal() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState({ name: "", id: "" });
   const [totalPage, setTotalPage] = useState(0);
@@ -54,81 +59,189 @@ export default function AllBlogsFinal() {
     };
     getAllBlogs();
   }, [sort, page]);
-  return (
-    <div className="min-vh-100" style={{ backgroundColor: "#f8f9fa" }}>
-      <div className="container-fluid py-4">
-        {currentUser.name && (
-          <div
-            className="alert alert-info border-0 shadow-sm mb-4"
-            role="alert"
-          >
-            <div className="d-flex align-items-center">
-              <div
-                className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                style={{ width: "50px", height: "50px", fontSize: "1.5rem" }}
-              >
-                {currentUser.name.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <h6 className="mb-0 fw-semibold">
-                  Welcome back, {currentUser.name}!
-                </h6>
-                <small className="text-muted">
-                  Start exploring and sharing your stories
-                </small>
-              </div>
-            </div>
-          </div>
-        )}
 
-        <div className="row mb-4">
-          <div className="col-12 col-md-6 col-lg-4">
-            <div className="card border-0 shadow-sm h-100">
-              <div className="card-body">
-                <label className="form-label fw-semibold text-dark mb-2">
-                  <i className="bi bi-funnel"></i> Filter by Category
-                </label>
-                <select
-                  name="category"
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="form-select shadow-sm"
-                >
-                  <option value="" disabled>
-                    Select Category
-                  </option>
-                  <option value="all">All Categories</option>
-                  <option value="design">Design</option>
-                  <option value="research">Research</option>
-                  <option value="software">Software</option>
-                </select>
-              </div>
+  const featuredBlog = recentBlogs?.[0];
+  const heroMetrics = [
+    {
+      label: "Fresh drops",
+      value: formatCount(recentBlogs?.length || 0),
+      note: "Latest stories highlighted first",
+    },
+    {
+      label: "Visible now",
+      value: formatCount(blogs?.length || 0),
+      note: "Posts on the current discovery page",
+    },
+    {
+      label: "Category",
+      value: (sort || "all").toUpperCase(),
+      note: "Your current editorial lane",
+    },
+  ];
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-[var(--dashboard-bg)] text-slate-900">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-8%] top-[6%] h-72 w-72 rounded-full bg-[radial-gradient(circle,_rgba(255,196,94,0.18),_transparent_72%)] blur-2xl" />
+        <div className="absolute right-[-10%] top-[20%] h-96 w-96 rounded-full bg-[radial-gradient(circle,_rgba(94,234,212,0.16),_transparent_72%)] blur-3xl" />
+        <div className="absolute bottom-[-12%] left-[35%] h-80 w-80 rounded-full bg-[radial-gradient(circle,_rgba(96,165,250,0.14),_transparent_72%)] blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-7 px-4 py-7 sm:px-5 lg:px-7">
+        <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="dashboard-panel p-4 sm:p-5">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-[#dbe6b8] bg-[#fff9df] px-3 py-1 text-xs uppercase tracking-[0.24em] text-[#4f5c46]">
+                Modern Editorial Frontpage
+              </span>
+              <span className="rounded-full bg-[#fff1cd] px-3 py-1 text-xs text-[#8b6a31]">
+                Discovery inspired by today&apos;s best blog platforms
+              </span>
             </div>
-          </div>
-        </div>
+
+            <div className="mt-6 max-w-3xl">
+              <h1 className="font-display text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl lg:text-6xl">
+                Read fresh blogs, discover ideas, and follow the stories worth your time.
+              </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-[#42503d] sm:text-base">
+                This blog homepage brings featured posts, recent writing, and category-based
+                discovery together so readers can move naturally from one article to the next.
+              </p>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              {heroMetrics.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-3xl border border-[#dbe6b8] bg-[#fffdf4] p-4"
+                >
+                  <p className="text-xs uppercase tracking-[0.22em] text-[#4f5c46]">
+                    {item.label}
+                  </p>
+                  <p className="mt-3 font-display text-3xl font-semibold text-slate-900">
+                    {item.value}
+                  </p>
+                  <p className="mt-2 text-sm text-[#42503d]">{item.note}</p>
+                </div>
+              ))}
+            </div>
+
+            </div>
+
+          <aside className="dashboard-panel p-4 sm:p-5">
+            <p className="text-xs uppercase tracking-[0.24em] text-[#465240]">
+              Featured Story
+            </p>
+            {featuredBlog ? (
+              <div className="mt-4 overflow-hidden rounded-[28px] border border-[#dbe6b8] bg-[#fffdf4]">
+                <div className="relative h-56">
+                  <img
+                    src={featuredBlog.url}
+                    alt={featuredBlog.title}
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#fff8dc] via-transparent to-transparent" />
+                  <div className="absolute left-4 top-4 rounded-full border border-[#f0d49e] bg-[#fff3c8] px-3 py-1 text-xs uppercase tracking-[0.2em] text-[#8b6a31]">
+                    Lead pick
+                  </div>
+                </div>
+                <div className="p-5">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[#465240]">
+                    {Array.isArray(featuredBlog.category)
+                      ? featuredBlog.category.join(" / ")
+                      : featuredBlog.category}
+                  </p>
+                  <h2 className="mt-3 font-display text-2xl text-slate-900">
+                    {featuredBlog.title}
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-[#42503d]">
+                    {featuredBlog.content.slice(0, 150)}
+                    {featuredBlog.content.length > 150 ? "..." : ""}
+                  </p>
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-[#42503d]">
+                    <span>{featuredBlog.author}</span>
+                    <span>{featuredBlog.comments?.length || 0} comments</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 rounded-[28px] border border-[#dbe6b8] bg-[#fffdf4] p-5">
+                <div className="animate-pulse space-y-3">
+                  <div className="h-40 rounded-3xl bg-[#edf0d9]" />
+                  <div className="h-4 w-28 rounded-full bg-[#edf0d9]" />
+                  <div className="h-8 w-3/4 rounded-full bg-[#edf0d9]" />
+                  <div className="h-4 w-full rounded-full bg-[#edf0d9]" />
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <button
+                onClick={() => navigate("/blogsform")}
+                className="rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
+              >
+                Start writing
+              </button>
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="rounded-2xl border border-[#dbe6b8] px-4 py-3 text-sm font-semibold text-[#364331] transition hover:bg-[#f4efcf]"
+              >
+                Open dashboard
+              </button>
+            </div>
+          </aside>
+        </section>
 
         <RecentBlogs blogs={recentBlogs} />
-        <AllBlogs blogs={blogs} loading={loading}/>
+        <AllBlogs
+          blogs={blogs}
+          loading={loading}
+          sort={sort}
+          setSort={setSort}
+          setPage={setPage}
+        />
 
-        <div className="d-flex justify-content-center align-items-center gap-3 my-5">
+        <section className="flex flex-col items-center justify-center gap-4 pb-4 sm:flex-row">
           <button
-            className="btn btn-primary px-4 shadow-sm"
+            className="w-full rounded-2xl border border-[#dbe6b8] px-5 py-3 text-sm font-semibold text-[#364331] transition hover:bg-[#f4efcf] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
             disabled={page === 1}
           >
-            <i className="bi bi-arrow-left"></i> Previous
+            Previous page
           </button>
-          <span className="badge bg-dark px-4 py-2 fs-6">
-            Page {page} of {totalPage}
-          </span>
+          <div className="rounded-full border border-[#dbe6b8] bg-[#fff9df] px-4 py-2 text-sm text-[#364331]">
+            Page {page} of {totalPage || 1}
+          </div>
           <button
-            className="btn btn-primary px-4 shadow-sm"
+            className="w-full rounded-2xl bg-[#a8cb73] px-5 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
             onClick={() => setPage((prev) => Math.min(prev + 1, totalPage))}
-            disabled={page === totalPage}
+            disabled={page === totalPage || totalPage === 0}
           >
-            Next <i className="bi bi-arrow-right"></i>
+            Next page
           </button>
-        </div>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-3">
+          {[
+            {
+              title: "Ghost-like editorial clarity",
+              copy: "Focused hierarchy, featured lead content, and less admin-looking chrome.",
+            },
+            {
+              title: "Substack-style recency",
+              copy: "Fresh writing is surfaced prominently so the homepage feels alive each visit.",
+            },
+            {
+              title: "Hashnode-like community flow",
+              copy: "Cards and category rhythm help readers bounce naturally across related stories.",
+            },
+          ].map((item) => (
+            <div key={item.title} className="dashboard-panel p-4 sm:p-5">
+              <p className="font-display text-xl text-slate-900">{item.title}</p>
+              <p className="mt-3 text-sm leading-6 text-[#42503d]">{item.copy}</p>
+            </div>
+          ))}
+        </section>
       </div>
     </div>
   );
