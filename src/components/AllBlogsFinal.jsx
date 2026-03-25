@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import RecentBlogs from "./RecentBlogs.jsx";
 import AllBlogs from "./AllBlogs.jsx";
 import api from "../utils/api.js";
+import { useToast } from "./ToastProvider.jsx";
+import { getErrorMessage } from "../utils/getErrorMessage.js";
 
 const formatCount = (value) => value.toString().padStart(2, "0");
 
@@ -16,6 +18,8 @@ export default function AllBlogsFinal() {
   const [recentBlogs, setRecentBlogs] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [sort, setSort] = useState("");
+  const [actionLoading, setActionLoading] = useState("");
+  const { showToast } = useToast();
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
@@ -24,6 +28,7 @@ export default function AllBlogsFinal() {
         // console.log("current user: ", res?.data?.user);
       } catch (error) {
         console.log("error user: ", error?.response?.data?.message);
+        showToast({ title: "Profile load failed", message: getErrorMessage(error) });
       }
     };
     getCurrentUser();
@@ -36,6 +41,7 @@ export default function AllBlogsFinal() {
         setRecentBlogs(res?.data);
       } catch (error) {
         console.log("error: ", error?.response?.data?.message);
+        showToast({ title: "Recent blogs failed", message: getErrorMessage(error) });
       }
     };
     getRecentBlogs();
@@ -53,6 +59,7 @@ export default function AllBlogsFinal() {
       } catch (error) {
         console.log("error: ", error?.response?.data?.message);
         setLoading(false);
+        showToast({ title: "Blog feed failed", message: getErrorMessage(error) });
       } finally {
         setLoading(false);
       }
@@ -177,16 +184,24 @@ export default function AllBlogsFinal() {
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <button
-                onClick={() => navigate("/blogsform")}
+                onClick={() => {
+                  setActionLoading("Start writing");
+                  navigate("/blogsform");
+                }}
+                disabled={actionLoading === "Start writing"}
                 className="rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
               >
-                Start writing
+                {actionLoading === "Start writing" ? "Start writing..." : "Start writing"}
               </button>
               <button
-                onClick={() => navigate("/dashboard")}
+                onClick={() => {
+                  setActionLoading("Open dashboard");
+                  navigate("/dashboard");
+                }}
+                disabled={actionLoading === "Open dashboard"}
                 className="rounded-2xl border border-[#dbe6b8] px-4 py-3 text-sm font-semibold text-[#364331] transition hover:bg-[#f4efcf]"
               >
-                Open dashboard
+                {actionLoading === "Open dashboard" ? "Open dashboard..." : "Open dashboard"}
               </button>
             </div>
           </aside>
@@ -204,20 +219,26 @@ export default function AllBlogsFinal() {
         <section className="flex flex-col items-center justify-center gap-4 pb-4 sm:flex-row">
           <button
             className="w-full rounded-2xl border border-[#dbe6b8] px-5 py-3 text-sm font-semibold text-[#364331] transition hover:bg-[#f4efcf] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={page === 1}
+            onClick={() => {
+              setActionLoading("Previous page");
+              setPage((prev) => Math.max(prev - 1, 1));
+            }}
+            disabled={page === 1 || loading}
           >
-            Previous page
+            {loading && actionLoading === "Previous page" ? "Previous page..." : "Previous page"}
           </button>
           <div className="rounded-full border border-[#dbe6b8] bg-[#fff9df] px-4 py-2 text-sm text-[#364331]">
             Page {page} of {totalPage || 1}
           </div>
           <button
             className="w-full rounded-2xl bg-[#a8cb73] px-5 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b] disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-            onClick={() => setPage((prev) => Math.min(prev + 1, totalPage))}
-            disabled={page === totalPage || totalPage === 0}
+            onClick={() => {
+              setActionLoading("Next page");
+              setPage((prev) => Math.min(prev + 1, totalPage));
+            }}
+            disabled={page === totalPage || totalPage === 0 || loading}
           >
-            Next page
+            {loading && actionLoading === "Next page" ? "Next page..." : "Next page"}
           </button>
         </section>
 

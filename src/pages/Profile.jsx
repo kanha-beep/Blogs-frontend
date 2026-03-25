@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import api from "../utils/api.js";
+import { useToast } from "../components/ToastProvider.jsx";
+import { getErrorMessage } from "../utils/getErrorMessage.js";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -11,6 +14,7 @@ export default function Profile() {
         setUser(res?.data?.user);
       } catch (error) {
         console.log("error user: ", error?.response?.data?.message);
+        showToast({ title: "Profile failed", message: getErrorMessage(error) });
       }
     };
     getCurrentUser();

@@ -1,14 +1,20 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Edit({ id }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   return (
     <button
-      onClick={() => navigate(`/${id}/edit`)}
+      onClick={() => {
+        setLoading(true);
+        navigate(`/${id}/edit`);
+      }}
+      disabled={loading}
       className="rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-4 py-3 text-sm font-medium text-[#364331] transition hover:bg-[#f4efcf]"
     >
-      Edit story
+      {loading ? "Edit story..." : "Edit story"}
     </button>
   );
 }

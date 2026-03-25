@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import api from "../utils/api.js";
 import { useNavigate, useParams } from "react-router-dom";
+import { useToast } from "../components/ToastProvider.jsx";
+import { getErrorMessage } from "../utils/getErrorMessage.js";
 export const EditBlogs = () => {
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
+  const { showToast } = useToast();
   // const [catgoryArray, setCategoryArray] = useState("")
   const [formData, setFormData] = useState({
     title: "",
@@ -27,7 +30,9 @@ export const EditBlogs = () => {
           "error fetching single blog to edit: ",
           e?.response?.data?.message,
         );
-        setMsg(e?.response?.data?.message);
+        const message = getErrorMessage(e);
+        setMsg(message);
+        showToast({ title: "Blog load failed", message });
       }
     };
     getSingleBlog();
@@ -60,6 +65,7 @@ export const EditBlogs = () => {
       navigate("/");
     } catch (e) {
       console.log("error uploading image: ", e?.response?.data?.message);
+      showToast({ title: "Update failed", message: getErrorMessage(e) });
     }
   };
   const handleCategory = (e) => {

@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import api from "../utils/api.js";
+import { useToast } from "../components/ToastProvider.jsx";
+import { getErrorMessage } from "../utils/getErrorMessage.js";
 export const BlogsForm = () => {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -32,6 +35,7 @@ export const BlogsForm = () => {
       window.location.href = "/";
     } catch (e) {
       console.log("error uploading image: ", e?.response?.data?.message);
+      showToast({ title: "Publish failed", message: getErrorMessage(e) });
     }
   };
   const handleCategory = (e) => {

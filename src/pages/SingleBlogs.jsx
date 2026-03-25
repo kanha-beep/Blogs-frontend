@@ -2,11 +2,14 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import api from "../utils/api";
 import { SingleBlogsCards } from "../cards/SingleBlogsCards";
+import { useToast } from "../components/ToastProvider.jsx";
+import { getErrorMessage } from "../utils/getErrorMessage.js";
 
 export const SingleBlogs = () => {
   const [user, setUser] = useState("");
   const [blogs, setBlogs] = useState(null);
   const { id } = useParams();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const getSingleBlog = async () => {
@@ -16,6 +19,7 @@ export const SingleBlogs = () => {
         setBlogs(res?.data);
       } catch (error) {
         console.log(error?.response?.data, "Single Blogs");
+        showToast({ title: "Story failed", message: getErrorMessage(error) });
       }
     };
 

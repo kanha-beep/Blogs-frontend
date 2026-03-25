@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function AllBlogsCards({ blog }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -42,10 +43,14 @@ export default function AllBlogsCards({ blog }) {
           {blog.content.length > 120 ? `${blog.content.substring(0, 120)}...` : blog.content}
         </p>
         <button
+          disabled={loading}
           className="mt-5 rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
-          onClick={() => navigate(`/${blog._id}/comments`)}
+          onClick={() => {
+            setLoading(true);
+            navigate(`/${blog._id}/comments`);
+          }}
         >
-          Read story
+          {loading ? "Read story..." : "Read story"}
         </button>
       </div>
     </article>

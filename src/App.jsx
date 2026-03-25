@@ -11,6 +11,7 @@ import { BlogsForm } from "./pages/BlogsForm.jsx";
 import SingleBlogsFinal from "./pages/SingleBlogsFinal.jsx";
 import { EditBlogs } from "./pages/EditBlogs.jsx";
 import { BlogsComments } from "./pages/BlogsComments.jsx";
+import { ToastProvider } from "./components/ToastProvider.jsx";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   useEffect(() => {
@@ -26,7 +27,7 @@ function App() {
     console.log("app: ", isLoggedIn);
   }, [isLoggedIn]);
   return (
-    <>
+    <ToastProvider>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
       <Routes>
         <Route path="/" element={<AllBlogsFinal />} />
@@ -44,7 +45,7 @@ function App() {
           }
         />
       </Routes>
-    </>
+    </ToastProvider>
   );
 }
 

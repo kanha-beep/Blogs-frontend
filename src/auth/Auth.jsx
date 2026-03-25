@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import api from "../utils/api.js";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../components/ToastProvider.jsx";
+import { getErrorMessage } from "../utils/getErrorMessage.js";
 export default function Auth({ setIsLoggedIn }) {
   const navigate = useNavigate()
+  const { showToast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [switching, setSwitching] = useState(false);
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -15,6 +20,7 @@ export default function Auth({ setIsLoggedIn }) {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     // login
     if (isLogin) {
       try {
@@ -33,6 +39,9 @@ export default function Auth({ setIsLoggedIn }) {
         console.log("error login: ", e?.response?.data?.message);
         setIsLogin(false);
         setIsLoggedIn(false);
+        showToast({ title: "Login failed", message: getErrorMessage(e, "Unable to log in") });
+      } finally {
+        setSubmitting(false);
       }
       //register
     } else {
@@ -52,6 +61,12 @@ export default function Auth({ setIsLoggedIn }) {
         console.log("error register: ", e?.response?.data?.message);
         setIsLogin(true);
         setIsLoggedIn(false);
+        showToast({
+          title: "Registration failed",
+          message: getErrorMessage(e, "Unable to create your account"),
+        });
+      } finally {
+        setSubmitting(false);
       }
     }
   };
@@ -108,8 +123,8 @@ export default function Auth({ setIsLoggedIn }) {
             </div>
           )}
 
-          <button className="btn btn-primary w-100 mt-2">
-            {isLogin ? "Login" : "Register"}
+          <button className="btn btn-primary w-100 mt-2" disabled={submitting}>
+            {submitting ? (isLogin ? "Login..." : "Register...") : isLogin ? "Login" : "Register"}
           </button>
         </form>
 
@@ -119,10 +134,14 @@ export default function Auth({ setIsLoggedIn }) {
           </small>
           <br />
           <button
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setSwitching(true);
+              setIsLogin(!isLogin);
+              setTimeout(() => setSwitching(false), 300);
+            }}
             className="btn btn-link text-decoration-none fw-semibold text-primary"
           >
-            {isLogin ? "Create One" : "Login Instead"}
+            {switching ? (isLogin ? "Create One..." : "Login Instead...") : isLogin ? "Create One" : "Login Instead"}
           </button>
         </div>
       </div>

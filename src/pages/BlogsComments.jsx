@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import api from "../utils/api.js";
 import { useNavigate, useParams } from "react-router-dom";
+import { useToast } from "../components/ToastProvider.jsx";
+import { getErrorMessage } from "../utils/getErrorMessage.js";
 
 const sortOptions = [
   { label: "Newest first", value: "newest" },
@@ -23,6 +25,7 @@ const formatCommentDate = (value) => {
 export const BlogsComments = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const currentUser = JSON.parse(localStorage.getItem("user") || "null");
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
@@ -33,6 +36,9 @@ export const BlogsComments = () => {
   const [showModal, setShowModal] = useState(false);
   const [sortBy, setSortBy] = useState("newest");
   const [submitting, setSubmitting] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [deletingId, setDeletingId] = useState("");
 
   const fetchComments = async () => {
     try {
@@ -40,6 +46,7 @@ export const BlogsComments = () => {
       setComments(res.data.comments || []);
     } catch (e) {
       console.log("Error fetching comments:", e?.response?.data?.message);
+      showToast({ title: "Comments failed", message: getErrorMessage(e) });
     }
   };
 
@@ -79,6 +86,7 @@ export const BlogsComments = () => {
     e.preventDefault();
 
     if (!currentUser) {
+      setRedirecting(true);
       navigate("/auth");
       return;
     }
@@ -96,6 +104,7 @@ export const BlogsComments = () => {
       fetchComments();
     } catch (e) {
       console.log("Error adding comment:", e?.response?.data?.message);
+      showToast({ title: "Comment failed", message: getErrorMessage(e) });
     } finally {
       setSubmitting(false);
     }
@@ -103,16 +112,20 @@ export const BlogsComments = () => {
 
   const handleDelete = async (commentId) => {
     try {
+      setDeletingId(commentId);
       await api.delete(`/blogs/${id}/comments/${commentId}`);
       fetchComments();
     } catch (e) {
       console.log("Error deleting comment:", e?.response?.data?.message);
-      alert(e?.response?.data?.message);
+      showToast({ title: "Delete failed", message: getErrorMessage(e) });
+    } finally {
+      setDeletingId("");
     }
   };
 
   const handleSave = async () => {
     try {
+      setSavingEdit(true);
       await api.patch(`/blogs/${id}/comments/${editComment?._id}`, {
         content: newText.trim(),
         rating: editRating,
@@ -122,8 +135,10 @@ export const BlogsComments = () => {
       setEditComment(null);
     } catch (e) {
       console.log("Error updating comment:", e?.response?.data?.message);
-      alert(e?.response?.data?.message);
+      showToast({ title: "Update failed", message: getErrorMessage(e) });
       setShowModal(false);
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -222,7 +237,9 @@ export const BlogsComments = () => {
                     ? submitting
                       ? "Publishing..."
                       : "Publish comment"
-                    : "Sign in to comment"}
+                    : redirecting
+                      ? "Sign in to comment..."
+                      : "Sign in to comment"}
                 </button>
               </div>
             </form>
@@ -328,6 +345,7 @@ export const BlogsComments = () => {
                     {isAuthor && (
                       <div className="flex flex-wrap gap-2 lg:justify-end">
                         <button
+                          disabled={savingEdit}
                           className="rounded-2xl border border-[#dbe6b8] px-4 py-2 text-sm text-[#53604f] transition hover:bg-[#f4efcf]"
                           onClick={() => {
                             setEditComment(comment);
@@ -337,15 +355,16 @@ export const BlogsComments = () => {
                           }}
                           type="button"
                         >
-                          Edit
+                          {savingEdit && editComment?._id === comment._id ? "Edit..." : "Edit"}
                         </button>
 
                         <button
+                          disabled={deletingId === comment?._id}
                           className="rounded-2xl border border-[#f0d49e] bg-[#fff1cd] px-4 py-2 text-sm text-[#8b5a2b] transition hover:bg-[#fde8b7]"
                           onClick={() => handleDelete(comment?._id)}
                           type="button"
                         >
-                          Delete
+                          {deletingId === comment?._id ? "Delete..." : "Delete"}
                         </button>
                       </div>
                     )}
@@ -413,11 +432,12 @@ export const BlogsComments = () => {
                     Cancel
                   </button>
                   <button
+                    disabled={savingEdit}
                     className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 transition hover:scale-[1.01]"
                     onClick={handleSave}
                     type="button"
                   >
-                    Save changes
+                    {savingEdit ? "Save changes..." : "Save changes"}
                   </button>
                 </div>
               </div>

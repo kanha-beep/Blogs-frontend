@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api.js";
+import { useToast } from "../components/ToastProvider.jsx";
+import { getErrorMessage } from "../utils/getErrorMessage.js";
 
 const formatDate = (value) =>
   new Date(value).toLocaleDateString("en-IN", {
@@ -14,6 +16,8 @@ const readingMinutes = (content = "") =>
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [actionLoading, setActionLoading] = useState("");
   const [dashboard, setDashboard] = useState({
     loading: true,
     totalBlogs: 0,
@@ -83,6 +87,7 @@ export default function Dashboard() {
       } catch (error) {
         console.log("dashboard error:", error?.response?.data?.message || error.message);
         setDashboard((prev) => ({ ...prev, loading: false }));
+        showToast({ title: "Dashboard failed", message: getErrorMessage(error) });
       }
     };
 
@@ -205,10 +210,14 @@ export default function Dashboard() {
             </div>
 
             <button
-              onClick={() => navigate("/blogsform")}
+              onClick={() => {
+                setActionLoading("Start a new story");
+                navigate("/blogsform");
+              }}
+              disabled={actionLoading === "Start a new story"}
               className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
             >
-              Start a new story
+              {actionLoading === "Start a new story" ? "Start a new story..." : "Start a new story"}
             </button>
           </aside>
         </section>
@@ -225,10 +234,14 @@ export default function Dashboard() {
                 </h2>
               </div>
               <button
-                onClick={() => navigate("/")}
+                onClick={() => {
+                  setActionLoading("View all posts");
+                  navigate("/");
+                }}
+                disabled={actionLoading === "View all posts"}
                 className="rounded-full border border-[#dbe6b8] px-4 py-2 text-sm text-[#364331] transition hover:bg-[#f4efcf]"
               >
-                View all posts
+                {actionLoading === "View all posts" ? "View all posts..." : "View all posts"}
               </button>
             </div>
 
@@ -302,10 +315,14 @@ export default function Dashboard() {
                         </div>
 
                         <button
-                          onClick={() => navigate(`/${blog._id}`)}
+                          onClick={() => {
+                            setActionLoading(blog._id);
+                            navigate(`/${blog._id}`);
+                          }}
+                          disabled={actionLoading === blog._id}
                           className="mt-auto rounded-2xl border border-[#dbe6b8] px-4 py-3 text-sm font-medium text-[#364331] transition hover:bg-[#f4efcf]"
                         >
-                          Open article
+                          {actionLoading === blog._id ? "Open article..." : "Open article"}
                         </button>
                       </div>
                     ) : (
