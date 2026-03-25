@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RecentBlogs from "./RecentBlogs.jsx";
@@ -20,6 +20,7 @@ export default function AllBlogsFinal() {
   const [blogs, setBlogs] = useState([]);
   const [sort, setSort] = useState("");
   const [actionLoading, setActionLoading] = useState("");
+  const hasLoadedRecentRef = useRef(false);
   const { showToast } = useToast();
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -46,11 +47,15 @@ export default function AllBlogsFinal() {
         setRecentBlogs(res?.data);
       } catch (error) {
         console.log("error: ", error?.response?.data?.message);
-        showToast({ title: "Recent blogs failed", message: getErrorMessage(error) });
+        if (hasLoadedRecentRef.current) {
+          showToast({ title: "Recent blogs failed", message: getErrorMessage(error) });
+        }
+      } finally {
+        hasLoadedRecentRef.current = true;
       }
     };
     getRecentBlogs();
-  }, [sort]);
+  }, [sort, showToast]);
   useEffect(() => {
     const getAllBlogs = async () => {
       try {
