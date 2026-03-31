@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
 
   const handleUnauthorized = useCallback(
     (error) => {
+      window.localStorage.removeItem("token");
       setUser(null);
       setAuthReady(true);
 
@@ -50,6 +51,14 @@ export function AuthProvider({ children }) {
 
   const refreshAuth = useCallback(
     async ({ redirectOnFail = false } = {}) => {
+      const token = window.localStorage.getItem("token");
+
+      if (!token) {
+        setUser(null);
+        setAuthReady(true);
+        return null;
+      }
+
       try {
         const res = await api.get("/auth/me", {
           skipAuthRedirect: true,
@@ -57,6 +66,7 @@ export function AuthProvider({ children }) {
         setUser(res?.data?.user || null);
         return res?.data?.user || null;
       } catch (error) {
+        window.localStorage.removeItem("token");
         setUser(null);
 
         if (redirectOnFail) {
@@ -88,6 +98,7 @@ export function AuthProvider({ children }) {
     } catch (error) {
       console.log("logout error:", error?.response?.data?.message || error.message);
     } finally {
+      window.localStorage.removeItem("token");
       setUser(null);
       setAuthReady(true);
       navigate("/auth", { replace: true });

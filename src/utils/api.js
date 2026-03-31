@@ -7,6 +7,17 @@ const api = axios.create({
     withCredentials: true
 })
 
+api.interceptors.request.use((config) => {
+    const token = typeof window !== "undefined" ? window.localStorage.getItem("token") : null;
+
+    if (token) {
+        config.headers = config.headers ?? {};
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+});
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {

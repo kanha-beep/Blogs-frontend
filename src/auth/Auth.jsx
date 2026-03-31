@@ -39,10 +39,14 @@ export default function Auth() {
         console.log("login user", user);
         const res = await api.post("/auth/login", user);
         console.log("user logged in: ", res.data);
+        if (res?.data?.token) {
+          window.localStorage.setItem("token", res.data.token);
+        }
         setAuthenticatedUser(res?.data?.user || null);
         navigate(redirectPath, { replace: true });
       } catch (e) {
         console.log("error login: ", e?.response?.data?.message);
+        window.localStorage.removeItem("token");
         setIsLogin(true);
         setAuthenticatedUser(null);
         showToast({ title: "Login failed", message: getErrorMessage(e, "Unable to log in") });
@@ -64,6 +68,7 @@ export default function Auth() {
         });
       } catch (e) {
         console.log("error register: ", e?.response?.data?.message);
+        window.localStorage.removeItem("token");
         setIsLogin(false);
         setAuthenticatedUser(null);
         showToast({
