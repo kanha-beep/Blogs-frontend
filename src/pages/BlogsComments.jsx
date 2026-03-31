@@ -40,6 +40,9 @@ export const BlogsComments = () => {
   const [redirecting, setRedirecting] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingId, setDeletingId] = useState("");
+  const [replyingTo, setReplyingTo] = useState("");
+  const [replyTextByComment, setReplyTextByComment] = useState({});
+  const [replySubmittingId, setReplySubmittingId] = useState("");
 
   const fetchComments = async () => {
     try {
@@ -121,6 +124,33 @@ export const BlogsComments = () => {
       showToast({ title: "Delete failed", message: getErrorMessage(e) });
     } finally {
       setDeletingId("");
+    }
+  };
+
+  const handleReplySubmit = async (commentId) => {
+    const replyText = replyTextByComment[commentId]?.trim();
+
+    if (!currentUser) {
+      setRedirecting(true);
+      navigate("/auth");
+      return;
+    }
+
+    if (!replyText) return;
+
+    try {
+      setReplySubmittingId(commentId);
+      await api.post(`/blogs/${id}/comments/${commentId}/replies`, {
+        content: replyText,
+      });
+      setReplyTextByComment((prev) => ({ ...prev, [commentId]: "" }));
+      setReplyingTo("");
+      fetchComments();
+    } catch (e) {
+      console.log("Error adding reply:", e?.response?.data?.message);
+      showToast({ title: "Reply failed", message: getErrorMessage(e) });
+    } finally {
+      setReplySubmittingId("");
     }
   };
 
@@ -310,6 +340,93 @@ export const BlogsComments = () => {
                         <p className="mt-3 max-w-3xl text-sm leading-6 text-[#2e3a29] sm:mt-4 sm:leading-7">
                           {comment?.content}
                         </p>
+
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setReplyingTo((prev) => (prev === comment._id ? "" : comment._id))
+                            }
+                            className="rounded-full border border-[#dbe6b8] px-3 py-1.5 text-xs font-medium text-[#53604f] transition hover:bg-[#f4efcf]"
+                          >
+                            Reply
+                          </button>
+                          {comment?.replies?.length > 0 && (
+                            <span className="text-xs text-[#465240]">
+                              {comment.replies.length} repl{comment.replies.length === 1 ? "y" : "ies"}
+                            </span>
+                          )}
+                        </div>
+
+                        {replyingTo === comment._id && (
+                          <div className="mt-4 rounded-[22px] border border-[#dbe6b8] bg-[#fffdf4] p-3">
+                            <textarea
+                              value={replyTextByComment[comment._id] || ""}
+                              onChange={(e) =>
+                                setReplyTextByComment((prev) => ({
+                                  ...prev,
+                                  [comment._id]: e.target.value,
+                                }))
+                              }
+                              maxLength={300}
+                              rows="3"
+                              placeholder="Write a reply..."
+                              className="w-full rounded-[18px] border border-[#dbe6b8] bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-[#a8cb73]"
+                            />
+                            <div className="mt-3 flex items-center justify-between gap-3">
+                              <p className="text-xs text-[#465240]">
+                                {(replyTextByComment[comment._id] || "").trim().length}/300
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setReplyingTo("");
+                                    setReplyTextByComment((prev) => ({
+                                      ...prev,
+                                      [comment._id]: "",
+                                    }));
+                                  }}
+                                  className="rounded-2xl border border-[#dbe6b8] px-3 py-2 text-sm text-[#364331] transition hover:bg-[#f4efcf]"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={
+                                    replySubmittingId === comment._id ||
+                                    !(replyTextByComment[comment._id] || "").trim()
+                                  }
+                                  onClick={() => handleReplySubmit(comment._id)}
+                                  className="rounded-2xl bg-[#a8cb73] px-4 py-2 text-sm font-semibold text-[#24311f] transition hover:bg-[#9fc46b] disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  {replySubmittingId === comment._id ? "Posting..." : "Post reply"}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {comment?.replies?.length > 0 && (
+                          <div className="mt-4 space-y-3 border-l-2 border-[#dbe6b8] pl-4">
+                            {comment.replies.map((reply) => (
+                              <div
+                                key={reply._id}
+                                className="rounded-[20px] border border-[#dbe6b8] bg-[#fffdf4] p-3"
+                              >
+                                <div className="flex flex-wrap items-center gap-2 text-xs text-[#465240]">
+                                  <span className="font-medium text-slate-900">
+                                    {reply?.user?.name || "Anonymous"}
+                                  </span>
+                                  <span>{formatCommentDate(reply?.createdAt)}</span>
+                                </div>
+                                <p className="mt-2 text-sm leading-6 text-[#2e3a29]">
+                                  {reply?.content}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
 
