@@ -1,6 +1,30 @@
 import axios from "axios"
+
+let unauthorizedHandler = null;
+
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true
 })
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const shouldHandle =
+            error?.response?.status === 401 &&
+            !error?.config?.skipAuthRedirect &&
+            typeof unauthorizedHandler === "function";
+
+        if (shouldHandle) {
+            unauthorizedHandler(error);
+        }
+
+        return Promise.reject(error);
+    }
+);
+
+export function setUnauthorizedHandler(handler) {
+    unauthorizedHandler = handler;
+}
+
 export default api;

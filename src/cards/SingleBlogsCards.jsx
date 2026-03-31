@@ -2,9 +2,11 @@ import { useMemo, useState } from "react";
 import GoToHomePageButton from "../buttons/GoToHomePageButton";
 import EditButton from "../buttons/EditButton.jsx";
 import DeleteButton from "../buttons/DeleteButton.jsx";
+import { useAuth } from "../auth/AuthContext.jsx";
+import SmartImage from "../components/SmartImage.jsx";
 
 export const SingleBlogsCards = ({ blogs, user }) => {
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const { user: currentUser } = useAuth();
   const [readerMode, setReaderMode] = useState("focus");
   const [activeParagraph, setActiveParagraph] = useState(0);
   const comments = blogs?.comments || [];
@@ -69,9 +71,9 @@ export const SingleBlogsCards = ({ blogs, user }) => {
   }, [paragraphs]);
 
   const readerModes = [
-    { id: "focus", label: "Focus" },
+    { id: "focus", label: "Default" },
     { id: "wide", label: "Wide" },
-    { id: "immersive", label: "Immersive" },
+    { id: "immersive", label: "Expanded" },
   ];
 
   const storyWidthClass =
@@ -89,10 +91,10 @@ export const SingleBlogsCards = ({ blogs, user }) => {
 
   return (
     <article className="dashboard-panel overflow-hidden rounded-none border-x-0 sm:rounded-[32px] sm:border">
-      <div className="p-3 sm:p-5 lg:p-5">
+      <div className="p-3 sm:p-5 lg:p-3">
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full border border-[#dbe6b8] bg-[#fff9df] px-3 py-1 text-xs uppercase tracking-[0.24em] text-[#465240]">
-            Feature Story
+            Blog Post
           </span>
           {blogs?.category && (
             <span className="rounded-full border border-[#cae1a8] bg-[#eef7cc] px-3 py-1 text-xs uppercase tracking-[0.22em] text-[#547047]">
@@ -122,7 +124,7 @@ export const SingleBlogsCards = ({ blogs, user }) => {
 
               <div className="rounded-2xl border border-[#dbe6b8] bg-[#fffdf4] px-3 py-2 sm:px-4 sm:py-3">
                 <p className="text-[11px] uppercase tracking-[0.14em] text-[#465240] sm:text-xs sm:tracking-[0.18em]">
-                  Reading Time
+                  Read Time
                 </p>
                 <p className="mt-1 text-sm font-medium text-slate-900">{readingTime} min read</p>
               </div>
@@ -139,42 +141,25 @@ export const SingleBlogsCards = ({ blogs, user }) => {
 
             <div className="mt-5 rounded-[24px] border border-[#dbe6b8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,232,0.96))] p-3 sm:mt-6 sm:rounded-[28px] sm:p-4">
               <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
-                Discussion snapshot
+                Comments Overview
               </p>
 
               <div className="mt-3 space-y-3 sm:mt-4 sm:space-y-4">
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  <div className="rounded-[18px] border border-[#dbe6b8] bg-[#fffdf4] p-2.5 text-center sm:rounded-[22px] sm:p-3 sm:text-left">
-                    <p className="text-[10px] uppercase tracking-[0.14em] text-[#465240] sm:text-[11px] sm:tracking-[0.18em]">
-                      Conversation pulse
-                    </p>
-                    <p className="mt-1 font-display text-xl text-slate-900 sm:text-2xl">
-                      {comments.length}
-                    </p>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <div className="rounded-full border border-[#dbe6b8] bg-[#fffdf4] px-3 py-2 text-sm text-[#364331]">
+                    {comments.length} comment{comments.length === 1 ? "" : "s"}
                   </div>
-
-                  <div className="rounded-[18px] border border-[#dbe6b8] bg-[#fffdf4] p-2.5 text-center sm:rounded-[22px] sm:p-3 sm:text-left">
-                    <p className="text-[10px] uppercase tracking-[0.14em] text-[#465240] sm:text-[11px] sm:tracking-[0.18em]">
-                      Active voices
-                    </p>
-                    <p className="mt-1 font-display text-xl text-slate-900 sm:text-2xl">
-                      {uniqueVoices}
-                    </p>
+                  <div className="rounded-full border border-[#c9ddd5] bg-[#e5f2ed] px-3 py-2 text-sm text-[#2d4b3f]">
+                    {uniqueVoices} people
                   </div>
-
-                  <div className="rounded-[18px] border border-[#dbe6b8] bg-[#fffdf4] p-2.5 text-center sm:rounded-[22px] sm:p-3 sm:text-left">
-                    <p className="text-[10px] uppercase tracking-[0.14em] text-[#465240] sm:text-[11px] sm:tracking-[0.18em]">
-                      Average rating
-                    </p>
-                    <p className="mt-1 font-display text-xl text-slate-900 sm:text-2xl">
-                      {averageRating}
-                    </p>
+                  <div className="rounded-full border border-[#ecd8a0] bg-[#fff3c8] px-3 py-2 text-sm text-[#7a5621]">
+                    {averageRating} avg rating
                   </div>
                 </div>
 
                 <div className="rounded-[18px] border border-[#dbe6b8] bg-[#f6f7e8] p-3 sm:rounded-[22px] sm:p-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
-                    Latest activity
+                    Latest comment
                   </p>
                   {latestComment ? (
                     <>
@@ -194,7 +179,7 @@ export const SingleBlogsCards = ({ blogs, user }) => {
                     </>
                   ) : (
                     <p className="mt-2 text-sm text-[#465240]">
-                      No replies yet. The first strong comment sets the tone.
+                      No comments yet.
                     </p>
                   )}
                 </div>
@@ -204,10 +189,11 @@ export const SingleBlogsCards = ({ blogs, user }) => {
 
           <aside className="rounded-[30px] border border-[#dbe6b8] bg-[#fffdf4] p-4">
             <div className="overflow-hidden rounded-[24px]">
-              <img
+              <SmartImage
                 src={blogs.url}
-                className="h-[20rem] w-full object-cover sm:h-[24rem]"
                 alt={blogs?.title}
+                fallbackLabel={blogs?.author ? `${blogs.author}'s article` : "Article visual"}
+                className="h-[20rem] w-full object-cover sm:h-[24rem]"
               />
             </div>
             <div className="mt-4 grid gap-3 sm:flex sm:flex-wrap">
@@ -228,7 +214,7 @@ export const SingleBlogsCards = ({ blogs, user }) => {
           <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-3">
               <span className="h-px flex-1 bg-[#dbe6b8]" />
-              <span className="text-xs uppercase tracking-[0.3em] text-[#465240]">Story</span>
+              <span className="text-xs uppercase tracking-[0.3em] text-[#465240]">Article</span>
               <span className="h-px flex-1 bg-[#dbe6b8]" />
             </div>
 

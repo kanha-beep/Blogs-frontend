@@ -3,16 +3,17 @@ import api from "../utils/api.js";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
+import { useAuth } from "../auth/AuthContext.jsx";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const hasSession = Boolean(localStorage.getItem("token") || localStorage.getItem("user"));
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     const getCurrentUser = async () => {
-      if (!hasSession) {
+      if (!isLoggedIn) {
         navigate("/auth");
         return;
       }
@@ -22,13 +23,13 @@ export default function Profile() {
         setUser(res?.data?.user);
       } catch (error) {
         console.log("error user: ", error?.response?.data?.message);
-        if (hasSession) {
+        if (isLoggedIn) {
           showToast({ title: "Profile failed", message: getErrorMessage(error) });
         }
       }
     };
     getCurrentUser();
-  }, [hasSession, navigate, showToast]);
+  }, [isLoggedIn, navigate, showToast]);
 
   return (
     <div className="min-vh-100 px-3 py-4 sm:px-4" style={{ backgroundColor: '#f8f9fa' }}>

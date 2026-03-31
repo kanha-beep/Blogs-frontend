@@ -3,6 +3,7 @@ import api from "../utils/api.js";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
+import { useAuth } from "../auth/AuthContext.jsx";
 
 const sortOptions = [
   { label: "Newest first", value: "newest" },
@@ -26,7 +27,7 @@ export const BlogsComments = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
+  const { user: currentUser } = useAuth();
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [rating, setRating] = useState(5);
@@ -150,10 +151,10 @@ export const BlogsComments = () => {
             {comments.length} comment{comments.length === 1 ? "" : "s"}
           </div>
           <div className="rounded-full border border-[#c9ddd5] bg-[#e5f2ed] px-4 py-2 text-sm text-[#2d4b3f]">
-            {uniqueVoices} active voice{uniqueVoices === 1 ? "" : "s"}
+            {uniqueVoices} people{uniqueVoices === 1 ? "" : "s"}
           </div>
           <div className="rounded-full border border-[#ecd8a0] bg-[#fff3c8] px-4 py-2 text-sm text-[#7a5621]">
-            {averageRating} avg stars
+            {averageRating} avg rating
           </div>
           <div className="flex items-center gap-2 rounded-full border border-[#dbe6b8] bg-[#fffdf4] px-3 py-2">
             <span className="text-[11px] uppercase tracking-[0.16em] text-[#465240]">Sort</span>
@@ -178,7 +179,7 @@ export const BlogsComments = () => {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-[#465240]">
-                  Write a reply
+                  Add a comment
                 </p>
               </div>
               <div className="rounded-2xl border border-[#dbe6b8] bg-[#fff9df] px-3 py-2 text-xs uppercase tracking-[0.18em] text-[#465240]">
@@ -225,9 +226,7 @@ export const BlogsComments = () => {
               />
 
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs leading-5 text-[#4f5c46]">
-                  Cleaner, member-style discussion inspired by current blog products.
-                </p>
+                <p className="text-xs leading-5 text-[#4f5c46]">Keep it clear and respectful.</p>
                 <button
                   type="submit"
                   disabled={submitting || (!currentUser ? false : !commentText.trim())}
@@ -252,7 +251,7 @@ export const BlogsComments = () => {
             <div className="rounded-[30px] border border-dashed border-[#dbe6b8] bg-[#fffdf4] p-4 text-center">
               <p className="font-display text-2xl text-slate-900">No comments yet</p>
               <p className="mt-2 text-sm text-[#465240]">
-                Start the discussion with a useful insight, question, or critique.
+                Be the first to comment.
               </p>
             </div>
           ) : (
@@ -356,12 +355,12 @@ export const BlogsComments = () => {
           <div className="w-full max-w-xl rounded-[32px] border border-[#dbe6b8] bg-[rgba(255,252,242,0.96)] p-5 shadow-[0_24px_60px_rgba(181,194,126,0.18)]">
             <h3 className="font-display text-2xl text-slate-900">Refine your comment</h3>
             <p className="mt-2 text-sm text-[#465240]">
-              Keep the conversation sharp, clear, and useful before saving it back.
+              Update your comment before saving.
             </p>
             <div className="mt-5">
               <div className="mb-4">
                 <p className="mb-3 text-xs uppercase tracking-[0.18em] text-[#465240]">
-                  Update star rating
+                  Change rating
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {STAR_VALUES.map((value) => (

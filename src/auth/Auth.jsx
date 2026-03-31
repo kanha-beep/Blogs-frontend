@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import api from "../utils/api.js";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
-export default function Auth({ setIsLoggedIn }) {
+import { useAuth } from "./AuthContext.jsx";
+
+export default function Auth() {
   const navigate = useNavigate()
+  const location = useLocation();
   const { showToast } = useToast();
+  const { isLoggedIn, setAuthenticatedUser } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [switching, setSwitching] = useState(false);
@@ -18,6 +22,14 @@ export default function Auth({ setIsLoggedIn }) {
     const { name, value } = e.target;
     setUser((p) => ({ ...p, [name]: value }));
   };
+  const redirectPath = location.state?.from || "/";
+
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      navigate(redirectPath, { replace: true });
+    }
+  }, [isLoggedIn, navigate, redirectPath]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -27,18 +39,12 @@ export default function Auth({ setIsLoggedIn }) {
         console.log("login user", user);
         const res = await api.post("/auth/login", user);
         console.log("user logged in: ", res.data);
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-        }
-        if (res.data.user) {
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-        }
-        setIsLoggedIn(true);
-        navigate("/");
+        setAuthenticatedUser(res?.data?.user || null);
+        navigate(redirectPath, { replace: true });
       } catch (e) {
         console.log("error login: ", e?.response?.data?.message);
-        setIsLogin(false);
-        setIsLoggedIn(false);
+        setIsLogin(true);
+        setAuthenticatedUser(null);
         showToast({ title: "Login failed", message: getErrorMessage(e, "Unable to log in") });
       } finally {
         setSubmitting(false);
@@ -49,18 +55,17 @@ export default function Auth({ setIsLoggedIn }) {
         console.log("register user", user);
         const res = await api.post("/auth/register", user);
         console.log("user registered in: ", res.data);
-        if (res.data.token) {
-          localStorage.setItem("token", res.data.token);
-        }
-        if (res.data.user) {
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-        }
         setIsLogin(true);
-        setIsLoggedIn(true);
+        setAuthenticatedUser(null);
+        showToast({
+          title: "Registration successful",
+          message: "Account created. Please log in to continue.",
+          type: "success",
+        });
       } catch (e) {
         console.log("error register: ", e?.response?.data?.message);
-        setIsLogin(true);
-        setIsLoggedIn(false);
+        setIsLogin(false);
+        setAuthenticatedUser(null);
         showToast({
           title: "Registration failed",
           message: getErrorMessage(e, "Unable to create your account"),

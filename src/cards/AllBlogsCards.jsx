@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SmartImage from "../components/SmartImage.jsx";
 
 export default function AllBlogsCards({ blog }) {
   const navigate = useNavigate();
@@ -12,9 +13,10 @@ export default function AllBlogsCards({ blog }) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-[30px] border border-[#dbe6b8] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(245,247,232,0.96))] transition duration-300 hover:-translate-y-1 hover:border-[#c8d79f]">
       <div className="relative h-56 overflow-hidden">
-        <img
+        <SmartImage
           src={blog.url}
           alt={blog.title}
+          fallbackLabel={blog.author ? `${blog.author}'s story` : "Story visual"}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
         {blog?.category && (
@@ -47,7 +49,7 @@ export default function AllBlogsCards({ blog }) {
           className="mt-5 rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
           onClick={() => {
             setLoading(true);
-            navigate(`/${blog._id}/comments`);
+            navigate(`/${blog._id}`);
           }}
         >
           {loading ? "Read story..." : "Read story"}

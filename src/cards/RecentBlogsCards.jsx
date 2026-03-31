@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import SmartImage from "../components/SmartImage.jsx";
 
 export default function RecentBlogsCards({ blog }) {
   const navigate = useNavigate();
@@ -12,12 +13,13 @@ export default function RecentBlogsCards({ blog }) {
   return (
     <article
       className="group cursor-pointer overflow-hidden rounded-[28px] border border-[#dbe6b8] bg-[#fffdf4] transition duration-300 hover:-translate-y-1 hover:border-[#c8d79f]"
-      onClick={() => navigate(`/${blog._id}/comments`)}
+      onClick={() => navigate(`/${blog._id}`)}
     >
       <div className="relative h-56 overflow-hidden">
-        <img
+        <SmartImage
           src={blog.url}
           alt={blog.title}
+          fallbackLabel={blog.author ? `${blog.author}'s pick` : "Featured visual"}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
         {blog?.category && (

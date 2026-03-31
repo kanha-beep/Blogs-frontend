@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { BlogsComments } from "./BlogsComments";
 import { SingleBlogs } from "./SingleBlogs";
 
 export default function SingleBlogsFinal() {
+  const location = useLocation();
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname]);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--dashboard-bg)] text-slate-900">
       <div className="pointer-events-none absolute inset-0">

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext.jsx";
 
 const publicLinks = [
   { label: "Home", path: "/" },
-  { label: "Archive", path: "/" },
   { label: "Discover", path: "/contacts" },
 ];
 
@@ -11,7 +11,6 @@ const privateLinks = [
   { label: "Home", path: "/" },
   { label: "Dashboard", path: "/dashboard" },
   { label: "Profile", path: "/profile" },
-  { label: "Studio", path: "/blogsform" },
   { label: "Contacts", path: "/contacts" },
 ];
 
@@ -24,16 +23,15 @@ function SparkMark() {
   );
 }
 
-export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
+export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isLoggedIn, logout } = useAuth();
   const [open, setOpen] = useState(false);
-  const [actionLoading, setActionLoading] = useState("");
 
   const navLinks = isLoggedIn ? privateLinks : publicLinks;
 
-  const closeAndNavigate = (path, label) => {
-    setActionLoading(label);
+  const closeAndNavigate = (path) => {
     setOpen(false);
     navigate(path);
   };
@@ -41,12 +39,14 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
   const isActive = (path) =>
     path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
 
-  const handleLogout = () => {
-    setActionLoading("Logout");
-    localStorage.clear();
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
     setOpen(false);
-    navigate("/auth");
+    await logout();
+  };
+
+  const handleCreatePost = () => {
+    setOpen(false);
+    navigate("/blogsform");
   };
 
   return (
@@ -70,15 +70,14 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
           {navLinks.map((item) => (
             <button
               key={item.label}
-              onClick={() => closeAndNavigate(item.path, item.label)}
-              disabled={actionLoading === item.label}
+              onClick={() => closeAndNavigate(item.path)}
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 isActive(item.path)
                   ? "bg-[#eef7cc] text-[#2d401f] shadow-[0_8px_22px_rgba(181,194,126,0.22)]"
                   : "text-[#364331] hover:bg-[#f4efcf] hover:text-[#1f2a1a]"
               }`}
             >
-              {actionLoading === item.label ? `${item.label}...` : item.label}
+              {item.label}
             </button>
           ))}
         </div>
@@ -90,35 +89,31 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
                 Publishing live
               </div>
               <button
-                onClick={() => closeAndNavigate("/blogsform", "New post")}
-                disabled={actionLoading === "New post"}
+                onClick={handleCreatePost}
                 className="rounded-full bg-[#a8cb73] px-4 py-2 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
               >
-                {actionLoading === "New post" ? "New post..." : "New post"}
+                New post
               </button>
               <button
                 onClick={handleLogout}
-                disabled={actionLoading === "Logout"}
                 className="rounded-full border border-[#dbe6b8] px-4 py-2 text-sm font-medium text-[#364331] transition hover:bg-[#f4efcf] hover:text-[#1f2a1a]"
               >
-                {actionLoading === "Logout" ? "Logout..." : "Logout"}
+                Logout
               </button>
             </>
           ) : (
             <>
               <button
-                onClick={() => closeAndNavigate("/auth", "Sign in")}
-                disabled={actionLoading === "Sign in"}
+                onClick={() => closeAndNavigate("/auth")}
                 className="rounded-full border border-[#dbe6b8] px-4 py-2 text-sm font-medium text-[#364331] transition hover:bg-[#f4efcf] hover:text-[#1f2a1a]"
               >
-                {actionLoading === "Sign in" ? "Sign in..." : "Sign in"}
+                Sign in
               </button>
               <button
-                onClick={() => closeAndNavigate("/auth", "Start writing")}
-                disabled={actionLoading === "Start writing"}
+                onClick={() => closeAndNavigate("/auth")}
                 className="rounded-full bg-[#a8cb73] px-4 py-2 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
               >
-                {actionLoading === "Start writing" ? "Start writing..." : "Start writing"}
+                Start writing
               </button>
             </>
           )}
@@ -141,15 +136,14 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
             {navLinks.map((item) => (
               <button
                 key={item.label}
-                onClick={() => closeAndNavigate(item.path, item.label)}
-                disabled={actionLoading === item.label}
+                onClick={() => closeAndNavigate(item.path)}
                 className={`rounded-2xl px-4 py-3 text-left text-sm font-medium transition ${
                   isActive(item.path)
                     ? "bg-[#eef7cc] text-[#24311f]"
                     : "bg-[#fffdf4] text-[#364331] hover:bg-[#f4efcf]"
                 }`}
               >
-                {actionLoading === item.label ? `${item.label}...` : item.label}
+                {item.label}
               </button>
             ))}
           </div>
@@ -158,35 +152,31 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
             {isLoggedIn ? (
               <>
                 <button
-                  onClick={() => closeAndNavigate("/blogsform", "Create new post")}
-                  disabled={actionLoading === "Create new post"}
+                  onClick={handleCreatePost}
                   className="rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
                 >
-                  {actionLoading === "Create new post" ? "Create new post..." : "Create new post"}
+                  Create new post
                 </button>
                 <button
                   onClick={handleLogout}
-                  disabled={actionLoading === "Logout"}
                   className="rounded-2xl border border-[#dbe6b8] px-4 py-3 text-sm font-medium text-[#364331] transition hover:bg-[#f4efcf]"
                 >
-                  {actionLoading === "Logout" ? "Logout..." : "Logout"}
+                  Logout
                 </button>
               </>
             ) : (
               <>
                 <button
-                  onClick={() => closeAndNavigate("/auth", "Start writing")}
-                  disabled={actionLoading === "Start writing"}
+                  onClick={() => closeAndNavigate("/auth")}
                   className="rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
                 >
-                  {actionLoading === "Start writing" ? "Start writing..." : "Start writing"}
+                  Start writing
                 </button>
                 <button
-                  onClick={() => closeAndNavigate("/auth", "Sign in")}
-                  disabled={actionLoading === "Sign in"}
+                  onClick={() => closeAndNavigate("/auth")}
                   className="rounded-2xl border border-[#dbe6b8] px-4 py-3 text-sm font-medium text-[#364331] transition hover:bg-[#f4efcf]"
                 >
-                  {actionLoading === "Sign in" ? "Sign in..." : "Sign in"}
+                  Sign in
                 </button>
               </>
             )}

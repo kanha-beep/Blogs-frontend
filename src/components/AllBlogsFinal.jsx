@@ -6,14 +6,13 @@ import AllBlogs from "./AllBlogs.jsx";
 import api from "../utils/api.js";
 import { useToast } from "./ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
+import SmartImage from "./SmartImage.jsx";
 
 const formatCount = (value) => value.toString().padStart(2, "0");
 
 export default function AllBlogsFinal() {
   const navigate = useNavigate();
-  const hasSession = Boolean(localStorage.getItem("token") || localStorage.getItem("user"));
   const [loading, setLoading] = useState(false);
-  const [currentUser, setCurrentUser] = useState({ name: "", id: "" });
   const [totalPage, setTotalPage] = useState(0);
   const [page, setPage] = useState(1);
   const [recentBlogs, setRecentBlogs] = useState([]);
@@ -22,23 +21,6 @@ export default function AllBlogsFinal() {
   const [actionLoading, setActionLoading] = useState("");
   const hasLoadedRecentRef = useRef(false);
   const { showToast } = useToast();
-  useEffect(() => {
-    const getCurrentUser = async () => {
-      if (!hasSession) return;
-
-      try {
-        const res = await api.get("/auth/me");
-        setCurrentUser(res?.data?.user);
-        // console.log("current user: ", res?.data?.user);
-      } catch (error) {
-        console.log("error user: ", error?.response?.data?.message);
-        if (hasSession) {
-          showToast({ title: "Profile load failed", message: getErrorMessage(error) });
-        }
-      }
-    };
-    getCurrentUser();
-  }, [hasSession, showToast]);
   useEffect(() => {
     const getRecentBlogs = async () => {
       try {
@@ -138,7 +120,6 @@ export default function AllBlogsFinal() {
                   <p className="mt-3 font-display text-3xl font-semibold text-slate-900">
                     {item.value}
                   </p>
-                  <p className="mt-2 text-sm text-[#42503d]">{item.note}</p>
                 </div>
               ))}
             </div>
@@ -151,10 +132,11 @@ export default function AllBlogsFinal() {
             </p>
             {featuredBlog ? (
               <div className="mt-4 overflow-hidden rounded-[28px] border border-[#dbe6b8] bg-[#fffdf4]">
-                <div className="relative h-56">
-                  <img
+                <div className="relative h-44 sm:h-48">
+                  <SmartImage
                     src={featuredBlog.url}
                     alt={featuredBlog.title}
+                    fallbackLabel="Lead story"
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#fff8dc] via-transparent to-transparent" />
@@ -162,20 +144,20 @@ export default function AllBlogsFinal() {
                     Lead pick
                   </div>
                 </div>
-                <div className="p-5">
+                <div className="p-4 sm:p-5">
                   <p className="text-xs uppercase tracking-[0.2em] text-[#465240]">
                     {Array.isArray(featuredBlog.category)
                       ? featuredBlog.category.join(" / ")
                       : featuredBlog.category}
                   </p>
-                  <h2 className="mt-3 font-display text-2xl text-slate-900">
+                  <h2 className="mt-2 font-display text-xl text-slate-900 sm:text-2xl">
                     {featuredBlog.title}
                   </h2>
-                  <p className="mt-3 text-sm leading-6 text-[#42503d]">
-                    {featuredBlog.content.slice(0, 150)}
-                    {featuredBlog.content.length > 150 ? "..." : ""}
+                  <p className="mt-2 text-sm leading-6 text-[#42503d]">
+                    {featuredBlog.content.slice(0, 100)}
+                    {featuredBlog.content.length > 100 ? "..." : ""}
                   </p>
-                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-[#42503d]">
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[#42503d]">
                     <span>{featuredBlog.author}</span>
                     <span>{featuredBlog.comments?.length || 0} comments</span>
                   </div>
@@ -252,27 +234,6 @@ export default function AllBlogsFinal() {
           </button>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-3">
-          {[
-            {
-              title: "Ghost-like editorial clarity",
-              copy: "Focused hierarchy, featured lead content, and less admin-looking chrome.",
-            },
-            {
-              title: "Substack-style recency",
-              copy: "Fresh writing is surfaced prominently so the homepage feels alive each visit.",
-            },
-            {
-              title: "Hashnode-like community flow",
-              copy: "Cards and category rhythm help readers bounce naturally across related stories.",
-            },
-          ].map((item) => (
-            <div key={item.title} className="dashboard-panel p-4 sm:p-5">
-              <p className="font-display text-xl text-slate-900">{item.title}</p>
-              <p className="mt-3 text-sm leading-6 text-[#42503d]">{item.copy}</p>
-            </div>
-          ))}
-        </section>
       </div>
     </div>
   );
