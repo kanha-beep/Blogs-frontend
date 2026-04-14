@@ -4,6 +4,7 @@ import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
 export const BlogsForm = () => {
   const { showToast } = useToast();
+  const [importing, setImporting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -11,12 +12,24 @@ export const BlogsForm = () => {
     image: null,
     category: [],
   });
+  const [newsImport, setNewsImport] = useState({
+    query: "",
+    category: "news",
+    limit: 5,
+  });
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
       ...formData,
       [name]: files && files.length > 0 ? files[0] : value,
     });
+  };
+  const handleNewsImportChange = (e) => {
+    const { name, value } = e.target;
+    setNewsImport((current) => ({
+      ...current,
+      [name]: name === "limit" ? Number(value) : value,
+    }));
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,6 +51,27 @@ export const BlogsForm = () => {
       showToast({ title: "Publish failed", message: getErrorMessage(e) });
     }
   };
+  const handleImportBlogs = async () => {
+    try {
+      setImporting(true);
+      const res = await api.post("/blogs/import-news", {
+        query: newsImport.query,
+        category: newsImport.category,
+        limit: newsImport.limit,
+        author: formData.author,
+      });
+      showToast({
+        title: "News imported",
+        message: res?.data?.message || "Blogs created from news successfully",
+        type: "success",
+      });
+      window.location.href = "/";
+    } catch (e) {
+      showToast({ title: "Import failed", message: getErrorMessage(e) });
+    } finally {
+      setImporting(false);
+    }
+  };
   const handleCategory = (e) => {
     const { value } = e.target;
     if (!formData.category.includes(value)) {
@@ -57,6 +91,66 @@ export const BlogsForm = () => {
                 <h3 className="text-center mb-4 fw-bold">
                   Create New Blog Post
                 </h3>
+
+                <div className="mb-4 rounded-3 border bg-light p-3">
+                  <div className="mb-3">
+                    <h5 className="mb-1 fw-bold">Import blogs from news API</h5>
+                    <p className="mb-0 text-muted">
+                      News title aur description ko combine karke har article ka auto blog create
+                      hoga. OpenAI ki zarurat nahi hai.
+                    </p>
+                  </div>
+
+                  <div className="row g-3">
+                    <div className="col-12 col-md-5">
+                      <label className="form-label fw-semibold">Topic keyword</label>
+                      <input
+                        type="text"
+                        name="query"
+                        placeholder="AI, startup, cricket..."
+                        value={newsImport.query}
+                        onChange={handleNewsImportChange}
+                        className="form-control"
+                      />
+                    </div>
+
+                    <div className="col-6 col-md-4">
+                      <label className="form-label fw-semibold">Category</label>
+                      <input
+                        type="text"
+                        name="category"
+                        placeholder="news"
+                        value={newsImport.category}
+                        onChange={handleNewsImportChange}
+                        className="form-control"
+                      />
+                    </div>
+
+                    <div className="col-6 col-md-3">
+                      <label className="form-label fw-semibold">Count</label>
+                      <input
+                        type="number"
+                        name="limit"
+                        min="1"
+                        max="10"
+                        value={newsImport.limit}
+                        onChange={handleNewsImportChange}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={handleImportBlogs}
+                      disabled={importing}
+                      className="btn btn-dark px-4 fw-semibold"
+                    >
+                      {importing ? "Importing blogs..." : "Generate blogs from news"}
+                    </button>
+                  </div>
+                </div>
 
                 <form onSubmit={handleSubmit}>
                   <div className="row mb-3">
