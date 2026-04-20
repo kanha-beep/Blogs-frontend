@@ -5,6 +5,8 @@ import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
 export const EditBlogs = () => {
   const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const { showToast } = useToast();
@@ -14,29 +16,33 @@ export const EditBlogs = () => {
     author: "",
     content: "",
     image: null,
+    imageUrl: "",
     category: [],
   });
-  console.log("formData", formData);
-  //single blog
+
   useEffect(() => {
     const getSingleBlog = async () => {
       try {
-        console.log("1. start");
         const res = await api.get(`/blogs/${id}/edit`);
-        console.log("single blog: ", res?.data);
-        setFormData({ ...res?.data, category: res?.data.category[0] || [] });
+        const blog = res?.data || {};
+        setFormData({
+          title: blog.title || "",
+          author: blog.author || "",
+          content: blog.content || "",
+          image: null,
+          imageUrl: blog.url || "",
+          category: Array.isArray(blog.category) ? blog.category : [],
+        });
       } catch (e) {
-        console.log(
-          "error fetching single blog to edit: ",
-          e?.response?.data?.message,
-        );
         const message = getErrorMessage(e);
         setMsg(message);
         showToast({ title: "Blog load failed", message });
+      } finally {
+        setLoading(false);
       }
     };
     getSingleBlog();
-  }, [id]);
+  }, [id, showToast]);
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({
@@ -46,31 +52,36 @@ export const EditBlogs = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.title.trim() || !formData.author.trim() || !formData.content.trim() || formData.category.length === 0) {
+      showToast({ title: "Update failed", message: "Please complete all required fields" });
+      return;
+    }
+
     const imageFormData = new FormData();
     if (formData.image) {
       imageFormData.append("image", formData.image);
     }
-    imageFormData.append("title", formData.title);
-    imageFormData.append("author", formData.author);
-    imageFormData.append("content", formData.content);
-    imageFormData.append("category", formData.category.join(""));
-    console.log(formData);
+    imageFormData.append("title", formData.title.trim());
+    imageFormData.append("author", formData.author.trim());
+    imageFormData.append("content", formData.content.trim());
+    formData.category.forEach((item) => imageFormData.append("category", item));
     try {
+      setSubmitting(true);
       const res = await api.patch(`/blogs/${id}/edit`, imageFormData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("updated: ", res?.data);
       navigate("/");
     } catch (e) {
-      console.log("error uploading image: ", e?.response?.data?.message);
       showToast({ title: "Update failed", message: getErrorMessage(e) });
+    } finally {
+      setSubmitting(false);
     }
   };
   const handleCategory = (e) => {
     const { value } = e.target;
-    if (!formData.category.includes(value)) {
+    if (value && !formData.category.includes(value)) {
       setFormData({
         ...formData,
         category: [...formData.category, value],
@@ -79,7 +90,7 @@ export const EditBlogs = () => {
   };
   return (
     <div className="min-vh-100 px-3 py-4 sm:px-4" style={{ backgroundColor: "#f8f9fa" }}>
-      {msg !== "" ? (
+      {loading ? null : msg !== "" ? (
         `${msg}`
       ) : (
         <>
@@ -142,9 +153,8 @@ export const EditBlogs = () => {
                           Category
                         </label>
                         <select
-                        
                           name="category"
-                          value={formData.category}
+                          value=""
                           onChange={handleCategory}
                           className="form-select"
                         >
@@ -185,9 +195,10 @@ export const EditBlogs = () => {
                       <div className="d-flex gap-2 justify-content-center">
                         <button
                           type="submit"
+                          disabled={submitting}
                           className="btn btn-primary px-5 fw-semibold"
                         >
-                          Update Blog
+                          {submitting ? "Updating..." : "Update Blog"}
                         </button>
                         <button
                           type="button"

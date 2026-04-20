@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import api from "../utils/api";
+import api from "../utils/api.js";
 import { SingleBlogsCards } from "../cards/SingleBlogsCards";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
@@ -24,7 +24,7 @@ export const SingleBlogs = () => {
     };
 
     getSingleBlog();
-  }, [id]);
+  }, [id, showToast]);
 
   return (
     <div>

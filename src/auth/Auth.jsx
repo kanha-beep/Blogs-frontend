@@ -17,6 +17,7 @@ export default function Auth() {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,9 +37,10 @@ export default function Auth() {
     // login
     if (isLogin) {
       try {
-        console.log("login user", user);
-        const res = await api.post("/auth/login", user);
-        console.log("user logged in: ", res.data);
+        const res = await api.post("/auth/login", {
+          email: user.email.trim(),
+          password: user.password,
+        });
         if (res?.data?.token) {
           window.localStorage.setItem("token", res.data.token);
         }
@@ -56,11 +58,22 @@ export default function Auth() {
       //register
     } else {
       try {
-        console.log("register user", user);
-        const res = await api.post("/auth/register", user);
-        console.log("user registered in: ", res.data);
+        if (user.password !== user.confirmPassword) {
+          showToast({
+            title: "Registration failed",
+            message: "Passwords do not match",
+          });
+          return;
+        }
+
+        await api.post("/auth/register", {
+          name: user.name.trim(),
+          email: user.email.trim(),
+          password: user.password,
+        });
         setIsLogin(true);
         setAuthenticatedUser(null);
+        setUser({ name: "", email: "", password: "", confirmPassword: "" });
         showToast({
           title: "Registration successful",
           message: "Account created. Please log in to continue.",
@@ -127,7 +140,8 @@ export default function Auth() {
                 type="password"
                 className="form-control"
                 placeholder="Confirm password"
-                name="password"
+                name="confirmPassword"
+                value={user.confirmPassword}
                 onChange={handleChange}
               />
             </div>

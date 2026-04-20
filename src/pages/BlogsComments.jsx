@@ -155,6 +155,11 @@ export const BlogsComments = () => {
   };
 
   const handleSave = async () => {
+    if (!newText.trim()) {
+      showToast({ title: "Update failed", message: "Comment content is required" });
+      return;
+    }
+
     try {
       setSavingEdit(true);
       await api.patch(`/blogs/${id}/comments/${editComment?._id}`, {
@@ -164,6 +169,8 @@ export const BlogsComments = () => {
       fetchComments();
       setShowModal(false);
       setEditComment(null);
+      setNewText("");
+      setEditRating(5);
     } catch (e) {
       console.log("Error updating comment:", e?.response?.data?.message);
       showToast({ title: "Update failed", message: getErrorMessage(e) });
@@ -513,6 +520,7 @@ export const BlogsComments = () => {
                     onClick={() => {
                       setShowModal(false);
                       setEditComment(null);
+                      setNewText("");
                       setEditRating(5);
                     }}
                     type="button"

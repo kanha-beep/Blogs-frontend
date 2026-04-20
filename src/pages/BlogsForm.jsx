@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import api from "../utils/api.js";
+import { useNavigate } from "react-router-dom";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
 export const BlogsForm = () => {
   const { showToast } = useToast();
+  const navigate = useNavigate();
   const [importing, setImporting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -33,22 +36,29 @@ export const BlogsForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.title.trim() || !formData.author.trim() || !formData.content.trim() || formData.category.length === 0) {
+      showToast({ title: "Publish failed", message: "Please complete all required fields" });
+      return;
+    }
+
     const imageFormData = new FormData();
     if (formData.image) {
       imageFormData.append("image", formData.image);
     }
-    imageFormData.append("title", formData.title);
-    imageFormData.append("author", formData.author);
-    imageFormData.append("content", formData.content);
-    imageFormData.append("category", formData.category);
-    console.log(formData);
+    imageFormData.append("title", formData.title.trim());
+    imageFormData.append("author", formData.author.trim());
+    imageFormData.append("content", formData.content.trim());
+    formData.category.forEach((item) => imageFormData.append("category", item));
     try {
+      setSubmitting(true);
       const res = await api.post("/blogs/new", imageFormData);
       console.log("image uploaded: ", res?.data);
-      window.location.href = "/";
+      navigate("/");
     } catch (e) {
       console.log("error uploading image: ", e?.response?.data?.message);
       showToast({ title: "Publish failed", message: getErrorMessage(e) });
+    } finally {
+      setSubmitting(false);
     }
   };
   const handleImportBlogs = async () => {
@@ -65,7 +75,7 @@ export const BlogsForm = () => {
         message: res?.data?.message || "Blogs created from news successfully",
         type: "success",
       });
-      window.location.href = "/";
+      navigate("/");
     } catch (e) {
       showToast({ title: "Import failed", message: getErrorMessage(e) });
     } finally {
@@ -74,7 +84,7 @@ export const BlogsForm = () => {
   };
   const handleCategory = (e) => {
     const { value } = e.target;
-    if (!formData.category.includes(value)) {
+    if (value && !formData.category.includes(value)) {
       setFormData({
         ...formData,
         category: [...formData.category, value],
@@ -194,7 +204,7 @@ export const BlogsForm = () => {
                     <label className="form-label fw-semibold">Category</label>
                     <select
                       name="category"
-                      value={formData.category}
+                      value=""
                       onChange={handleCategory}
                       className="form-select"
                     >
@@ -230,9 +240,10 @@ export const BlogsForm = () => {
                   <div className="text-center">
                     <button
                       type="submit"
+                      disabled={submitting}
                       className="btn btn-primary px-5 fw-semibold"
                     >
-                      Publish Blog
+                      {submitting ? "Publishing..." : "Publish Blog"}
                     </button>
                   </div>
                 </form>
