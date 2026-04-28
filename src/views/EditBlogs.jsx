@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import api from "../utils/api.js";
 import { useNavigate, useParams } from "react-router-dom";
@@ -67,7 +69,7 @@ export const EditBlogs = () => {
     formData.category.forEach((item) => imageFormData.append("category", item));
     try {
       setSubmitting(true);
-      const res = await api.patch(`/blogs/${id}/edit`, imageFormData, {
+      await api.patch(`/blogs/${id}/edit`, imageFormData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

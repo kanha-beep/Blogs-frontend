@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 
 export default function Contacts() {
@@ -46,7 +48,7 @@ export default function Contacts() {
                           minWidth: "48px",
                         }}
                       >
-                        <i className="bi bi-envelope text-primary fs-5"></i>
+                        <span className="text-primary fs-5 fw-bold">@</span>
                       </div>
                       <div>
                         <h6 className="fw-semibold mb-1">Email</h6>
@@ -72,7 +74,7 @@ export default function Contacts() {
                           minWidth: "48px",
                         }}
                       >
-                        <i className="bi bi-telephone text-success fs-5"></i>
+                        <span className="text-success fs-5 fw-bold">Tel</span>
                       </div>
                       <div>
                         <h6 className="fw-semibold mb-1">Phone</h6>
@@ -96,7 +98,7 @@ export default function Contacts() {
                           minWidth: "48px",
                         }}
                       >
-                        <i className="bi bi-geo-alt text-info fs-5"></i>
+                        <span className="text-info fs-5 fw-bold">Pin</span>
                       </div>
                       <div>
                         <h6 className="fw-semibold mb-1">Office</h6>

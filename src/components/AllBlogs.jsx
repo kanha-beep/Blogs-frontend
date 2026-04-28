@@ -1,3 +1,5 @@
+"use client";
+
 import AllBlogsCards from "../cards/AllBlogsCards.jsx";
 export default function AllBlogs({ blogs, loading, sort, setSort, setPage }) {
   return (

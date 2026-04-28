@@ -1,3 +1,5 @@
+"use client";
+
 import RecentBlogsCards from "../cards/RecentBlogsCards";
 export default function RecentBlogs({ blogs }) {
   return (

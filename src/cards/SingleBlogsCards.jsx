@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, useState } from "react";
 import GoToHomePageButton from "../buttons/GoToHomePageButton";
 import EditButton from "../buttons/EditButton.jsx";

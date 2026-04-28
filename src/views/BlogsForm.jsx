@@ -1,32 +1,81 @@
-import React, { useState } from "react";
+﻿"use client";
+
+import React, { useEffect, useMemo, useState } from "react";
 import api from "../utils/api.js";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "next/navigation";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
+
+const CATEGORY_OPTIONS = [
+  "design",
+  "research",
+  "software",
+  "politics",
+  "international",
+  "sports",
+  "economy",
+  "education",
+  "crime",
+  "drugs",
+  "health",
+  "opinion",
+  "news",
+];
+
 export const BlogsForm = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [importing, setImporting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const prefilledCategories = useMemo(
+    () =>
+      (searchParams.get("category") || "")
+        .split(",")
+        .map((item) => item.trim().toLowerCase())
+        .filter(Boolean),
+    [searchParams],
+  );
   const [formData, setFormData] = useState({
     title: "",
     author: "",
     content: "",
     image: null,
     category: [],
+    sourceUrl: "",
   });
   const [newsImport, setNewsImport] = useState({
     query: "",
     category: "news",
     limit: 5,
   });
+
+  useEffect(() => {
+    setFormData((current) => {
+      const nextTitle = searchParams.get("title") || current.title;
+      const nextSourceUrl = searchParams.get("url") || current.sourceUrl;
+      const nextCategories = current.category.length
+        ? current.category
+        : prefilledCategories;
+
+      return {
+        ...current,
+        title: nextTitle,
+        sourceUrl: nextSourceUrl,
+        category: nextCategories,
+      };
+    });
+  }, [prefilledCategories, searchParams]);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((current) => ({
+      ...current,
       [name]: files && files.length > 0 ? files[0] : value,
-    });
+    }));
   };
+
   const handleNewsImportChange = (e) => {
     const { name, value } = e.target;
     setNewsImport((current) => ({
@@ -34,10 +83,19 @@ export const BlogsForm = () => {
       [name]: name === "limit" ? Number(value) : value,
     }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.author.trim() || !formData.content.trim() || formData.category.length === 0) {
-      showToast({ title: "Publish failed", message: "Please complete all required fields" });
+    if (
+      !formData.title.trim() ||
+      !formData.author.trim() ||
+      !formData.content.trim() ||
+      formData.category.length === 0
+    ) {
+      showToast({
+        title: "Publish failed",
+        message: "Please complete all required fields",
+      });
       return;
     }
 
@@ -48,7 +106,9 @@ export const BlogsForm = () => {
     imageFormData.append("title", formData.title.trim());
     imageFormData.append("author", formData.author.trim());
     imageFormData.append("content", formData.content.trim());
+    imageFormData.append("sourceUrl", formData.sourceUrl.trim());
     formData.category.forEach((item) => imageFormData.append("category", item));
+
     try {
       setSubmitting(true);
       const res = await api.post("/blogs/new", imageFormData);
@@ -61,6 +121,7 @@ export const BlogsForm = () => {
       setSubmitting(false);
     }
   };
+
   const handleImportBlogs = async () => {
     try {
       setImporting(true);
@@ -82,15 +143,24 @@ export const BlogsForm = () => {
       setImporting(false);
     }
   };
+
   const handleCategory = (e) => {
     const { value } = e.target;
     if (value && !formData.category.includes(value)) {
-      setFormData({
-        ...formData,
-        category: [...formData.category, value],
-      });
+      setFormData((current) => ({
+        ...current,
+        category: [...current.category, value],
+      }));
     }
   };
+
+  const removeCategory = (categoryToRemove) => {
+    setFormData((current) => ({
+      ...current,
+      category: current.category.filter((cat) => cat !== categoryToRemove),
+    }));
+  };
+
   return (
     <div className="min-vh-100 px-3 py-4 sm:px-4" style={{ backgroundColor: "#f8f9fa" }}>
       <div className="mx-auto w-full max-w-5xl">
@@ -98,9 +168,7 @@ export const BlogsForm = () => {
           <div className="col-12 col-lg-8">
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4 p-md-5">
-                <h3 className="text-center mb-4 fw-bold">
-                  Create New Blog Post
-                </h3>
+                <h3 className="text-center mb-4 fw-bold">Create New Blog Post</h3>
 
                 <div className="mb-4 rounded-3 border bg-light p-3">
                   <div className="mb-3">
@@ -189,6 +257,18 @@ export const BlogsForm = () => {
                   </div>
 
                   <div className="mb-3">
+                    <label className="form-label fw-semibold">Source news URL</label>
+                    <input
+                      type="url"
+                      name="sourceUrl"
+                      placeholder="https://example.com/news-story"
+                      value={formData.sourceUrl}
+                      onChange={handleChange}
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="mb-3">
                     <label className="form-label fw-semibold">Content</label>
                     <textarea
                       name="content"
@@ -202,25 +282,27 @@ export const BlogsForm = () => {
 
                   <div className="mb-3">
                     <label className="form-label fw-semibold">Category</label>
-                    <select
-                      name="category"
-                      value=""
-                      onChange={handleCategory}
-                      className="form-select"
-                    >
+                    <select name="category" value="" onChange={handleCategory} className="form-select">
                       <option value="" disabled>
                         Select Category
                       </option>
-                      <option value="design">Design</option>
-                      <option value="research">Research</option>
-                      <option value="software">Software</option>
+                      {CATEGORY_OPTIONS.map((option) => (
+                        <option key={option} value={option}>
+                          {option.charAt(0).toUpperCase() + option.slice(1)}
+                        </option>
+                      ))}
                     </select>
                     {formData.category?.length > 0 && (
-                      <div className="mt-2">
+                      <div className="mt-2 d-flex flex-wrap gap-2">
                         {formData.category.map((cat) => (
-                          <span key={cat} className="badge bg-primary me-2">
-                            {cat}
-                          </span>
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => removeCategory(cat)}
+                            className="badge bg-primary border-0"
+                          >
+                            {cat} ×
+                          </button>
                         ))}
                       </div>
                     )}
@@ -238,11 +320,7 @@ export const BlogsForm = () => {
                   </div>
 
                   <div className="text-center">
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="btn btn-primary px-5 fw-semibold"
-                    >
+                    <button type="submit" disabled={submitting} className="btn btn-primary px-5 fw-semibold">
                       {submitting ? "Publishing..." : "Publish Blog"}
                     </button>
                   </div>
@@ -255,3 +333,6 @@ export const BlogsForm = () => {
     </div>
   );
 };
+
+
+

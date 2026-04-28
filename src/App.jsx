@@ -1,17 +1,19 @@
+"use client";
+
 import Navbar from "./components/Navbar";
 import AllBlogsFinal from "./components/AllBlogsFinal";
 import { Routes, Route } from "react-router-dom";
 import Auth from "./auth/Auth.jsx";
 import ProtectedRoute from "./auth/ProtectedRoute.jsx";
 import { AuthProvider } from "./auth/AuthContext.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import Profile from "./pages/Profile.jsx";
-import Contacts from "./pages/Contacts.jsx";
-import { BlogsForm } from "./pages/BlogsForm.jsx";
-// import { SingleBlogs } from "./pages/SingleBlogs.jsx";
-import SingleBlogsFinal from "./pages/SingleBlogsFinal.jsx";
-import { EditBlogs } from "./pages/EditBlogs.jsx";
-import { BlogsComments } from "./pages/BlogsComments.jsx";
+import Dashboard from "./views/Dashboard.jsx";
+import Profile from "./views/Profile.jsx";
+import Contacts from "./views/Contacts.jsx";
+import { BlogsForm } from "./views/BlogsForm.jsx";
+// import { SingleBlogs } from "./views/SingleBlogs.jsx";
+import SingleBlogsFinal from "./views/SingleBlogsFinal.jsx";
+import { EditBlogs } from "./views/EditBlogs.jsx";
+import { BlogsComments } from "./views/BlogsComments.jsx";
 import { ToastProvider } from "./components/ToastProvider.jsx";
 function App() {
   return (

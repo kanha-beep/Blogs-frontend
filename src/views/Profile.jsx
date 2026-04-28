@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import api from "../utils/api.js";
 import { useNavigate } from "react-router-dom";

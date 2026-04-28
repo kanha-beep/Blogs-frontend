@@ -1,3 +1,5 @@
+﻿"use client";
+
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext.jsx";
 
@@ -10,8 +12,15 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (!isLoggedIn) {
-    return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
+    return (
+      <Navigate
+        to="/auth"
+        replace
+        state={{ from: `${location.pathname}${location.search}${location.hash}` }}
+      />
+    );
   }
 
   return children;
 }
+

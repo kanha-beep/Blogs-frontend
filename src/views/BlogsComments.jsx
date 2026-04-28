@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useMemo, useState } from "react";
 import api from "../utils/api.js";
 import { useNavigate, useParams } from "react-router-dom";

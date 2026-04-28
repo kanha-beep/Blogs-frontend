@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { BlogsComments } from "./BlogsComments";

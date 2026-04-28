@@ -1,3 +1,5 @@
+﻿"use client";
+
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api, { setUnauthorizedHandler } from "../utils/api.js";
@@ -8,10 +10,7 @@ const AuthContext = createContext(null);
 const protectedPaths = ["/dashboard", "/profile", "/blogsform"];
 
 function isProtectedPath(pathname = "") {
-  return (
-    protectedPaths.includes(pathname) ||
-    /^\/[^/]+\/edit$/.test(pathname)
-  );
+  return protectedPaths.includes(pathname) || /^\/[^/]+\/edit$/.test(pathname);
 }
 
 function normalizeUnauthorizedMessage(message) {
@@ -42,11 +41,11 @@ export function AuthProvider({ children }) {
         });
         navigate("/auth", {
           replace: true,
-          state: { from: location.pathname },
+          state: { from: `${location.pathname}${location.search}${location.hash}` },
         });
       }
     },
-    [location.pathname, navigate, showToast]
+    [location.hash, location.pathname, location.search, navigate, showToast],
   );
 
   const refreshAuth = useCallback(
@@ -80,7 +79,7 @@ export function AuthProvider({ children }) {
         setAuthReady(true);
       }
     },
-    [handleUnauthorized]
+    [handleUnauthorized],
   );
 
   useEffect(() => {
@@ -114,7 +113,7 @@ export function AuthProvider({ children }) {
       setAuthenticatedUser: setUser,
       logout,
     }),
-    [authReady, logout, refreshAuth, user]
+    [authReady, logout, refreshAuth, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -129,3 +128,4 @@ export function useAuth() {
 
   return context;
 }
+
