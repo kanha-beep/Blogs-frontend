@@ -26,7 +26,7 @@ const CATEGORY_OPTIONS = [
 export const BlogsForm = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const [importing, setImporting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const prefilledCategories = useMemo(
