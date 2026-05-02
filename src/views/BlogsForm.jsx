@@ -2,10 +2,11 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import api from "../utils/api.js";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
+import { useAuth } from "../auth/AuthContext.jsx";
 
 const CATEGORY_OPTIONS = [
   "design",
@@ -26,7 +27,9 @@ const CATEGORY_OPTIONS = [
 export const BlogsForm = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const searchParams = useSearchParams();
+  const { isLoggedIn, authReady } = useAuth();
   const [importing, setImporting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const prefilledCategories = useMemo(
@@ -84,8 +87,25 @@ export const BlogsForm = () => {
     }));
   };
 
+  const redirectToLogin = () => {
+    navigate("/auth", {
+      replace: true,
+      state: { from: `${location.pathname}${location.search}${location.hash || ""}` },
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (authReady && !isLoggedIn) {
+      showToast({
+        title: "Sign in required",
+        message: "Please sign in to publish your blog.",
+      });
+      redirectToLogin();
+      return;
+    }
+
     if (
       !formData.title.trim() ||
       !formData.author.trim() ||
@@ -123,6 +143,15 @@ export const BlogsForm = () => {
   };
 
   const handleImportBlogs = async () => {
+    if (authReady && !isLoggedIn) {
+      showToast({
+        title: "Sign in required",
+        message: "Please sign in to import blogs from news.",
+      });
+      redirectToLogin();
+      return;
+    }
+
     try {
       setImporting(true);
       const res = await api.post("/blogs/import-news", {
@@ -169,6 +198,11 @@ export const BlogsForm = () => {
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4 p-md-5">
                 <h3 className="text-center mb-4 fw-bold">Create New Blog Post</h3>
+                {!isLoggedIn && (
+                  <div className="mb-4 rounded-3 border border-warning-subtle bg-warning bg-opacity-10 p-3 text-center text-muted">
+                    You can review or edit this draft now. Sign in is only needed when you publish or import.
+                  </div>
+                )}
 
                 <div className="mb-4 rounded-3 border bg-light p-3">
                   <div className="mb-3">

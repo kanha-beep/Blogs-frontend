@@ -45,10 +45,12 @@ export function useLocation() {
   const searchParams = useSearchParams();
   const query = searchParams.toString();
   const from = searchParams.get("from");
+  const hash = typeof window !== "undefined" ? window.location.hash : "";
 
   return {
     pathname,
     search: query ? `?${query}` : "",
+    hash,
     state: from ? { from } : null,
   };
 }

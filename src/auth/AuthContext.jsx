@@ -7,7 +7,7 @@ import { useToast } from "../components/ToastProvider.jsx";
 
 const AuthContext = createContext(null);
 
-const protectedPaths = ["/dashboard", "/profile", "/blogsform"];
+const protectedPaths = ["/dashboard", "/profile"];
 
 function isProtectedPath(pathname = "") {
   return protectedPaths.includes(pathname) || /^\/[^/]+\/edit$/.test(pathname);

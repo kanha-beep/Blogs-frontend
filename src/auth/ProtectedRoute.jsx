@@ -1,26 +1,44 @@
-﻿"use client";
+"use client";
 
-import { Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext.jsx";
 
 export default function ProtectedRoute({ children }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { authReady, isLoggedIn } = useAuth();
 
+  useEffect(() => {
+    if (!authReady || isLoggedIn) {
+      return;
+    }
+
+    navigate("/auth", {
+      replace: true,
+      state: { from: `${location.pathname}${location.search}${location.hash || ""}` },
+    });
+  }, [authReady, isLoggedIn, location.hash, location.pathname, location.search, navigate]);
+
   if (!authReady) {
-    return null;
+    return (
+      <div className="mx-auto mt-8 w-full max-w-3xl px-4">
+        <div className="dashboard-panel p-5 text-center text-[#465240]">
+          Checking your session...
+        </div>
+      </div>
+    );
   }
 
   if (!isLoggedIn) {
     return (
-      <Navigate
-        to="/auth"
-        replace
-        state={{ from: `${location.pathname}${location.search}${location.hash}` }}
-      />
+      <div className="mx-auto mt-8 w-full max-w-3xl px-4">
+        <div className="dashboard-panel p-5 text-center text-[#465240]">
+          Redirecting to sign in...
+        </div>
+      </div>
     );
   }
 
   return children;
 }
-
