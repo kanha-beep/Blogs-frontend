@@ -2,6 +2,7 @@ import { connectDB } from "../../../../src/server/db.js";
 import { ApiError, errorResponse, json, normalizeCategory, verifyRequest } from "../../../../src/server/api.js";
 import { uploadToCloudinary } from "../../../../src/server/cloudinary.js";
 import { Blog } from "../../../../src/server/models/Blog.js";
+import { News } from "../../../../src/server/models/News.js";
 
 export async function POST(request) {
   try {
@@ -11,6 +12,7 @@ export async function POST(request) {
     const title = String(formData.get("title") || "").trim();
     const content = String(formData.get("content") || "").trim();
     const author = String(formData.get("author") || "").trim();
+    const sourceUrl = String(formData.get("sourceUrl") || "").trim();
     const category = normalizeCategory(formData.getAll("category"));
     const image = formData.get("image");
 
@@ -31,7 +33,15 @@ export async function POST(request) {
       url: uploadedImage?.secure_url,
       category,
       user: user._id,
+      sourceUrl,
     });
+
+    if (sourceUrl) {
+      await News.updateOne(
+        { $or: [{ link: sourceUrl }, { title }] },
+        { $set: { blogId: newBlog._id } }
+      );
+    }
 
     return json({ message: "New Blog Created Successfully", newBlog });
   } catch (error) {
