@@ -5,6 +5,7 @@ import api from "../utils/api.js";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../components/ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
+import SmartImage from "../components/SmartImage.jsx";
 export const EditBlogs = () => {
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(true);
@@ -19,6 +20,7 @@ export const EditBlogs = () => {
     content: "",
     image: null,
     imageUrl: "",
+    removeImage: false,
     category: [],
   });
 
@@ -33,6 +35,7 @@ export const EditBlogs = () => {
           content: blog.content || "",
           image: null,
           imageUrl: blog.url || "",
+          removeImage: false,
           category: Array.isArray(blog.category) ? blog.category : [],
         });
       } catch (e) {
@@ -50,6 +53,7 @@ export const EditBlogs = () => {
     setFormData({
       ...formData,
       [name]: files && files.length > 0 ? files[0] : value,
+      ...(name === "image" ? { removeImage: false } : {}),
     });
   };
   const handleSubmit = async (e) => {
@@ -63,6 +67,7 @@ export const EditBlogs = () => {
     if (formData.image) {
       imageFormData.append("image", formData.image);
     }
+    imageFormData.append("removeImage", String(formData.removeImage));
     imageFormData.append("title", formData.title.trim());
     imageFormData.append("author", formData.author.trim());
     imageFormData.append("content", formData.content.trim());
@@ -89,6 +94,14 @@ export const EditBlogs = () => {
         category: [...formData.category, value],
       });
     }
+  };
+  const handleRemoveImage = () => {
+    setFormData((current) => ({
+      ...current,
+      image: null,
+      imageUrl: "",
+      removeImage: true,
+    }));
   };
   return (
     <div className="min-vh-100 px-3 py-4 sm:px-4" style={{ backgroundColor: "#f8f9fa" }}>
@@ -182,6 +195,16 @@ export const EditBlogs = () => {
                         <label className="form-label fw-semibold">
                           Blog Image
                         </label>
+                        {formData.imageUrl && !formData.removeImage && (
+                          <div className="mb-3 overflow-hidden rounded-4 border">
+                            <SmartImage
+                              src={formData.imageUrl}
+                              alt={formData.title || "Current blog image"}
+                              fallbackLabel="Current image"
+                              className="h-[16rem] w-full object-cover"
+                            />
+                          </div>
+                        )}
                         <input
                           type="file"
                           name="image"
@@ -189,9 +212,25 @@ export const EditBlogs = () => {
                           onChange={handleChange}
                           className="form-control"
                         />
-                        <small className="text-muted">
-                          Leave empty to keep current image
-                        </small>
+                        <div className="mt-2 d-flex flex-wrap gap-2 align-items-center">
+                          <small className="text-muted">
+                            Leave empty to keep current image
+                          </small>
+                          {formData.imageUrl && !formData.removeImage && (
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={handleRemoveImage}
+                            >
+                              Remove current image
+                            </button>
+                          )}
+                          {formData.removeImage && (
+                            <small className="text-danger">
+                              Current image will be removed when you update the blog.
+                            </small>
+                          )}
+                        </div>
                       </div>
 
                       <div className="d-flex gap-2 justify-content-center">

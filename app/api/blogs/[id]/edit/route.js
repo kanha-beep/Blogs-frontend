@@ -39,6 +39,7 @@ export async function PATCH(request, { params }) {
     const sourceUrl = String(formData.get("sourceUrl") || "").trim();
     const category = normalizeCategory(formData.getAll("category"));
     const image = formData.get("image");
+    const removeImage = String(formData.get("removeImage") || "").toLowerCase() === "true";
 
     if (!title || !content || !author || category.length === 0) {
       throw new ApiError(400, "All fields are required");
@@ -57,7 +58,7 @@ export async function PATCH(request, { params }) {
         content,
         author,
         category,
-        url: uploadedImage?.secure_url || existingBlog.url || "",
+        url: removeImage ? "" : uploadedImage?.secure_url || existingBlog.url || "",
         sourceUrl: sourceUrl || existingBlog.sourceUrl || "",
       },
       { new: true }
