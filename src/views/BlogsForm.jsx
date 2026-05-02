@@ -142,36 +142,36 @@ export const BlogsForm = () => {
     }
   };
 
-  const handleImportBlogs = async () => {
-    if (authReady && !isLoggedIn) {
-      showToast({
-        title: "Sign in required",
-        message: "Please sign in to import blogs from news.",
-      });
-      redirectToLogin();
-      return;
-    }
+  // const handleImportBlogs = async () => {
+  //   if (authReady && !isLoggedIn) {
+  //     showToast({
+  //       title: "Sign in required",
+  //       message: "Please sign in to import blogs from news.",
+  //     });
+  //     redirectToLogin();
+  //     return;
+  //   }
 
-    try {
-      setImporting(true);
-      const res = await api.post("/blogs/import-news", {
-        query: newsImport.query,
-        category: newsImport.category,
-        limit: newsImport.limit,
-        author: formData.author,
-      });
-      showToast({
-        title: "News imported",
-        message: res?.data?.message || "Blogs created from news successfully",
-        type: "success",
-      });
-      navigate("/");
-    } catch (e) {
-      showToast({ title: "Import failed", message: getErrorMessage(e) });
-    } finally {
-      setImporting(false);
-    }
-  };
+  //   try {
+  //     setImporting(true);
+  //     const res = await api.post("/blogs/import-news", {
+  //       query: newsImport.query,
+  //       category: newsImport.category,
+  //       limit: newsImport.limit,
+  //       author: formData.author,
+  //     });
+  //     showToast({
+  //       title: "News imported",
+  //       message: res?.data?.message || "Blogs created from news successfully",
+  //       type: "success",
+  //     });
+  //     navigate("/");
+  //   } catch (e) {
+  //     showToast({ title: "Import failed", message: getErrorMessage(e) });
+  //   } finally {
+  //     setImporting(false);
+  //   }
+  // };
 
   const handleCategory = (e) => {
     const { value } = e.target;
