@@ -11,7 +11,8 @@ export default function SmartImage({
   fallbackLabel = "",
 }) {
   const [loaded, setLoaded] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState(!src);
+  const fallbackText = (alt || fallbackLabel || "Story visual").trim();
 
   return (
     <div className={`smart-image ${wrapperClassName}`}>
@@ -27,7 +28,7 @@ export default function SmartImage({
 
       {failed ? (
         <div className="smart-image__fallback">
-          <span>{fallbackLabel || "Story visual"}</span>
+          <span className="smart-image__fallback-title">{fallbackText}</span>
         </div>
       ) : (
         <img

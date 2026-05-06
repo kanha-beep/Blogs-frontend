@@ -30,7 +30,6 @@ export const BlogsForm = () => {
   const location = useLocation();
   const searchParams = useSearchParams();
   const { isLoggedIn, authReady } = useAuth();
-  const [importing, setImporting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const prefilledCategories = useMemo(
     () =>
@@ -47,11 +46,6 @@ export const BlogsForm = () => {
     image: null,
     category: [],
     sourceUrl: "",
-  });
-  const [newsImport, setNewsImport] = useState({
-    query: "",
-    category: "news",
-    limit: 5,
   });
 
   useEffect(() => {
@@ -76,14 +70,6 @@ export const BlogsForm = () => {
     setFormData((current) => ({
       ...current,
       [name]: files && files.length > 0 ? files[0] : value,
-    }));
-  };
-
-  const handleNewsImportChange = (e) => {
-    const { name, value } = e.target;
-    setNewsImport((current) => ({
-      ...current,
-      [name]: name === "limit" ? Number(value) : value,
     }));
   };
 
@@ -141,37 +127,6 @@ export const BlogsForm = () => {
       setSubmitting(false);
     }
   };
-
-  // const handleImportBlogs = async () => {
-  //   if (authReady && !isLoggedIn) {
-  //     showToast({
-  //       title: "Sign in required",
-  //       message: "Please sign in to import blogs from news.",
-  //     });
-  //     redirectToLogin();
-  //     return;
-  //   }
-
-  //   try {
-  //     setImporting(true);
-  //     const res = await api.post("/blogs/import-news", {
-  //       query: newsImport.query,
-  //       category: newsImport.category,
-  //       limit: newsImport.limit,
-  //       author: formData.author,
-  //     });
-  //     showToast({
-  //       title: "News imported",
-  //       message: res?.data?.message || "Blogs created from news successfully",
-  //       type: "success",
-  //     });
-  //     navigate("/");
-  //   } catch (e) {
-  //     showToast({ title: "Import failed", message: getErrorMessage(e) });
-  //   } finally {
-  //     setImporting(false);
-  //   }
-  // };
 
   const handleCategory = (e) => {
     const { value } = e.target;
@@ -309,65 +264,3 @@ export const BlogsForm = () => {
     </div>
   );
 };
-
-
-
-  // <div className="mb-4 rounded-3 border bg-light p-3">
-  //                 <div className="mb-3">
-  //                   <h5 className="mb-1 fw-bold">Import blogs from news API</h5>
-  //                   <p className="mb-0 text-muted">
-  //                     News title aur description ko combine karke har article ka auto blog create
-  //                     hoga. OpenAI ki zarurat nahi hai.
-  //                   </p>
-  //                 </div>
-
-  //                 <div className="row g-3">
-  //                   <div className="col-12 col-md-5">
-  //                     <label className="form-label fw-semibold">Topic keyword</label>
-  //                     <input
-  //                       type="text"
-  //                       name="query"
-  //                       placeholder="AI, startup, cricket..."
-  //                       value={newsImport.query}
-  //                       onChange={handleNewsImportChange}
-  //                       className="form-control"
-  //                     />
-  //                   </div>
-
-  //                   <div className="col-6 col-md-4">
-  //                     <label className="form-label fw-semibold">Category</label>
-  //                     <input
-  //                       type="text"
-  //                       name="category"
-  //                       placeholder="news"
-  //                       value={newsImport.category}
-  //                       onChange={handleNewsImportChange}
-  //                       className="form-control"
-  //                     />
-  //                   </div>
-
-  //                   <div className="col-6 col-md-3">
-  //                     <label className="form-label fw-semibold">Count</label>
-  //                     <input
-  //                       type="number"
-  //                       name="limit"
-  //                       min="1"
-  //                       max="10"
-  //                       value={newsImport.limit}
-  //                       onChange={handleNewsImportChange}
-  //                       className="form-control"
-  //                     />
-  //                   </div>
-  //                 </div>
-
-  //                 <div className="mt-3">
-  //                   <button
-  //                     type="button"
-  //                     onClick={handleImportBlogs}
-  //                     disabled={importing}
-  //                     className="btn btn-dark px-4 fw-semibold"
-  //                   >
-  //                     {importing ? "Importing blogs..." : "Generate blogs from news"}
-  //                   </button>
-  //                 </div>
-  //               </div>

@@ -185,12 +185,29 @@ body {
   text-align: center;
   color: #4f5c46;
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
-  font-size: 0.95rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   background:
     radial-gradient(circle at 30% 30%, rgba(248, 232, 166, 0.35), transparent 35%),
     linear-gradient(135deg, #f7f4df 0%, #eef3d7 100%);
+}
+
+.smart-image__fallback-title {
+  display: -webkit-box;
+  overflow: hidden;
+  max-width: 100%;
+  padding: 0.8rem 1rem;
+  color: #304122;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-size: clamp(1.05rem, 3vw, 1.8rem);
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-transform: none;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  text-shadow: 0 10px 24px rgba(255, 255, 255, 0.45);
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  animation: smart-image-title-pulse 2.2s ease-in-out infinite;
 }
 
 @keyframes smart-image-shine {
@@ -199,6 +216,18 @@ body {
   }
   100% {
     transform: translateX(120%);
+  }
+}
+
+@keyframes smart-image-title-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.92;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
   }
 }
 
