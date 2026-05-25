@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { Link } from "react-router-dom";
 import SmartImage from "../components/SmartImage.jsx";
+import { getBlogPath } from "../seo/site.js";
 
 export default function AllBlogsCards({ blog }) {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const blogPath = getBlogPath(blog);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -41,21 +41,19 @@ export default function AllBlogsCards({ blog }) {
           </div>
         </div>
         <h3 className="font-display text-2xl leading-tight text-slate-900">
-          {blog.title.length > 72 ? `${blog.title.substring(0, 72)}...` : blog.title}
+          <Link to={blogPath} className="text-inherit no-underline hover:text-inherit">
+            {blog.title.length > 72 ? `${blog.title.substring(0, 72)}...` : blog.title}
+          </Link>
         </h3>
         <p className="mt-3 flex-grow text-sm leading-6 text-[#42503d]">
           {blog.content.length > 120 ? `${blog.content.substring(0, 120)}...` : blog.content}
         </p>
-        <button
-          disabled={loading}
+        <Link
+          to={blogPath}
           className="mt-5 rounded-2xl bg-[#a8cb73] px-4 py-3 text-sm font-semibold text-[#24311f] transition hover:scale-[1.01] hover:bg-[#9fc46b]"
-          onClick={() => {
-            setLoading(true);
-            navigate(`/${blog._id}`);
-          }}
         >
-          {loading ? "Read story..." : "Read story"}
-        </button>
+          Read story
+        </Link>
       </div>
     </article>
   );

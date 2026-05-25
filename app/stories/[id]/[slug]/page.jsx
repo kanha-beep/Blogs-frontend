@@ -1,8 +1,11 @@
-import SingleBlogsFinal from "../../src/views/SingleBlogsFinal.jsx";
-import StructuredData from "../../src/components/StructuredData.jsx";
-import { buildStoryMetadata } from "../../src/seo/metadata.js";
-import { getPublicBlogById } from "../../src/seo/server.js";
-import { buildBlogPostingSchema, buildBreadcrumbSchema } from "../../src/seo/structured-data.js";
+import SingleBlogsFinal from "../../../../src/views/SingleBlogsFinal.jsx";
+import StructuredData from "../../../../src/components/StructuredData.jsx";
+import { buildStoryMetadata } from "../../../../src/seo/metadata.js";
+import { getPublicBlogById } from "../../../../src/seo/server.js";
+import {
+  buildBlogPostingSchema,
+  buildBreadcrumbSchema,
+} from "../../../../src/seo/structured-data.js";
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
@@ -12,7 +15,7 @@ export async function generateMetadata({ params }) {
     return buildStoryMetadata({
       title: "Story not found",
       description: "The requested Blogscape story could not be found.",
-      canonicalPath: `/${id}`,
+      canonicalPath: `/stories/${id}/story`,
       index: false,
       follow: false,
     });
@@ -27,7 +30,7 @@ export async function generateMetadata({ params }) {
   });
 }
 
-export default async function SingleBlogPage({ params }) {
+export default async function StoryPage({ params }) {
   const { id } = await params;
   const blog = await getPublicBlogById(id);
 

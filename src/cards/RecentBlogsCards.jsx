@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import SmartImage from "../components/SmartImage.jsx";
+import { getBlogPath } from "../seo/site.js";
 
 export default function RecentBlogsCards({ blog }) {
-  const navigate = useNavigate();
+  const blogPath = getBlogPath(blog);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -13,9 +14,10 @@ export default function RecentBlogsCards({ blog }) {
   };
 
   return (
-    <article
-      className="group cursor-pointer overflow-hidden rounded-[28px] border border-[#dbe6b8] bg-[#fffdf4] transition duration-300 hover:-translate-y-1 hover:border-[#c8d79f]"
-      onClick={() => navigate(`/${blog._id}`)}
+    <Link
+      to={blogPath}
+      className="group block cursor-pointer overflow-hidden rounded-[28px] border border-[#dbe6b8] bg-[#fffdf4] no-underline transition duration-300 hover:-translate-y-1 hover:border-[#c8d79f]"
+      aria-label={`Read ${blog.title}`}
     >
       <div className="relative h-56 overflow-hidden">
         <SmartImage
@@ -45,6 +47,6 @@ export default function RecentBlogsCards({ blog }) {
             : blog.content}
         </p>
       </div>
-    </article>
+    </Link>
   );
 }

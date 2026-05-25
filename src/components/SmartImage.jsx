@@ -9,6 +9,7 @@ export default function SmartImage({
   wrapperClassName = "",
   imageClassName = "",
   fallbackLabel = "",
+  priority = false,
 }) {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(!src);
@@ -35,6 +36,9 @@ export default function SmartImage({
           src={src}
           alt={alt}
           className={`${className} ${imageClassName} ${loaded ? "smart-image__img--loaded" : "smart-image__img--loading"}`.trim()}
+          loading={priority ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={priority ? "high" : "auto"}
           onLoad={() => setLoaded(true)}
           onError={() => {
             setFailed(true);

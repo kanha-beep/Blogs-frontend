@@ -2,13 +2,14 @@
 
 import { useRef, useState } from "react";
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import RecentBlogs from "./RecentBlogs.jsx";
 import AllBlogs from "./AllBlogs.jsx";
 import api from "../utils/api.js";
 import { useToast } from "./ToastProvider.jsx";
 import { getErrorMessage } from "../utils/getErrorMessage.js";
 import SmartImage from "./SmartImage.jsx";
+import { getBlogPath } from "../seo/site.js";
 
 const formatCount = (value) => value.toString().padStart(2, "0");
 
@@ -62,6 +63,7 @@ export default function AllBlogsFinal() {
   }, [sort, page]);
 
   const featuredBlog = recentBlogs?.[0];
+  const featuredBlogPath = featuredBlog ? getBlogPath(featuredBlog) : "/";
   const heroMetrics = [
     {
       label: "Fresh drops",
@@ -139,6 +141,7 @@ export default function AllBlogsFinal() {
                     src={featuredBlog.url}
                     alt={featuredBlog.title}
                     fallbackLabel="Lead story"
+                    priority
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#fff8dc] via-transparent to-transparent" />
@@ -153,7 +156,12 @@ export default function AllBlogsFinal() {
                       : featuredBlog.category}
                   </p>
                   <h2 className="mt-2 font-display text-xl text-slate-900 sm:text-2xl">
-                    {featuredBlog.title}
+                    <Link
+                      to={featuredBlogPath}
+                      className="text-inherit no-underline hover:text-inherit"
+                    >
+                      {featuredBlog.title}
+                    </Link>
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-[#42503d]">
                     {featuredBlog.content.slice(0, 100)}
@@ -161,7 +169,12 @@ export default function AllBlogsFinal() {
                   </p>
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[#42503d]">
                     <span>{featuredBlog.author}</span>
-                    <span>{featuredBlog.comments?.length || 0} comments</span>
+                    <Link
+                      to={featuredBlogPath}
+                      className="text-inherit no-underline hover:text-inherit"
+                    >
+                      {featuredBlog.comments?.length || 0} comments
+                    </Link>
                   </div>
                 </div>
               </div>

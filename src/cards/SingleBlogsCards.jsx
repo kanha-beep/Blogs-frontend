@@ -195,6 +195,7 @@ export const SingleBlogsCards = ({ blogs, user }) => {
                 src={blogs.url}
                 alt={blogs?.title}
                 fallbackLabel={blogs?.author ? `${blogs.author}'s article` : "Article visual"}
+                priority
                 className="h-[20rem] w-full object-cover sm:h-[24rem]"
               />
             </div>

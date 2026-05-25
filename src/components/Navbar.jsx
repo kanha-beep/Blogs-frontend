@@ -70,9 +70,10 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-2 lg:flex">
           {navLinks.map((item) => (
-            <button
+            <Link
               key={item.label}
-              onClick={() => closeAndNavigate(item.path)}
+              to={item.path}
+              onClick={() => setOpen(false)}
               className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                 isActive(item.path)
                   ? "bg-[#eef7cc] text-[#2d401f] shadow-[0_8px_22px_rgba(181,194,126,0.22)]"
@@ -80,7 +81,7 @@ export default function Navbar() {
               }`}
             >
               {item.label}
-            </button>
+            </Link>
           ))}
         </div>
 
@@ -136,9 +137,10 @@ export default function Navbar() {
         <div className="mx-auto mt-3 w-full max-w-7xl rounded-[28px] border border-[#dbe6b8] bg-[rgba(255,252,242,0.94)] p-4 text-slate-900 shadow-[0_16px_40px_rgba(181,194,126,0.18)] backdrop-blur-2xl lg:hidden">
           <div className="grid gap-2">
             {navLinks.map((item) => (
-              <button
+              <Link
                 key={item.label}
-                onClick={() => closeAndNavigate(item.path)}
+                to={item.path}
+                onClick={() => setOpen(false)}
                 className={`rounded-2xl px-4 py-3 text-left text-sm font-medium transition ${
                   isActive(item.path)
                     ? "bg-[#eef7cc] text-[#24311f]"
@@ -146,7 +148,7 @@ export default function Navbar() {
                 }`}
               >
                 {item.label}
-              </button>
+              </Link>
             ))}
           </div>
 
